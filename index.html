@@ -1,0 +1,3741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e39ec2">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="花间时光">
+<title>花间时光</title>
+<style>
+/* ============================================
+   花间时光 · 个人成长工作台
+   阶段 0：主题框架 + 导航骨架
+   （本阶段：页面切换、主题换肤并保存；
+     任务/数据功能从阶段 1 起逐步开放）
+   ============================================ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+/* ---------- 四套主题（樱花 / 紫藤 / 森林 / 奶油） ---------- */
+:root, body.theme-sakura {
+  --bg-a: #fdf2f7; --bg-b: #f7f0fc; --bg-c: #f2f8ef;
+  --acc1: #f2b8cd; --acc2: #c9a7e0; --acc-deep: #a986cf;
+  --ink: #574a52; --ink2: #a08d99;
+  --card: #ffffff; --line: #f0e0e8;
+  --good: #7fa66f; --bad: #d9534f;
+  --nav-bg: rgba(255, 250, 246, .96);
+}
+body.theme-wisteria {
+  --bg-a: #f7f2fc; --bg-b: #efe7f9; --bg-c: #f4f0fa;
+  --acc1: #d9c3ee; --acc2: #b99ae0; --acc-deep: #9272c9;
+  --ink: #4e4360; --ink2: #9d90b5;
+  --card: #ffffff; --line: #e9def3;
+  --good: #7d9d6f; --bad: #c9536b;
+  --nav-bg: rgba(252, 249, 255, .96);
+}
+body.theme-forest {
+  --bg-a: #f3f8ee; --bg-b: #e9f3e2; --bg-c: #f6f9f1;
+  --acc1: #cfe3c8; --acc2: #a3c793; --acc-deep: #5f8a52;
+  --ink: #43503d; --ink2: #8ba07f;
+  --card: #ffffff; --line: #e0ecd8;
+  --good: #5f8a52; --bad: #c25b4e;
+  --nav-bg: rgba(250, 254, 246, .96);
+}
+body.theme-cream {
+  --bg-a: #fdf8ef; --bg-b: #f9f1e3; --bg-c: #fbf6ec;
+  --acc1: #f0d9b8; --acc2: #dcae7c; --acc-deep: #b07f4f;
+  --ink: #5c4c3c; --ink2: #ab9679;
+  --card: #ffffff; --line: #f0e4d0;
+  --good: #8a9a5f; --bad: #c25b4e;
+  --nav-bg: rgba(255, 252, 246, .96);
+}
+
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  color: var(--ink); font-size: 16px; line-height: 1.65;
+  background: linear-gradient(160deg, var(--bg-a) 0%, var(--bg-b) 45%, var(--bg-c) 100%);
+  min-height: 100vh;
+}
+:focus-visible { outline: 3px solid var(--acc1); outline-offset: 2px; }
+
+/* ---------- 框架 ---------- */
+.app { max-width: 1080px; margin: 0 auto; display: flex; }
+.sidebar { display: none; }
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 16px 8px; }
+.brand { font-family: "KaiTi", "STKaiti", serif; font-size: 30px; color: var(--acc-deep); letter-spacing: 2px; }
+.brand small { font-size: 13px; color: var(--ink2); letter-spacing: 0; display: block; font-family: "Microsoft YaHei"; }
+.topbtn {
+  border: 1.5px solid var(--acc2); color: var(--acc-deep); background: var(--card);
+  border-radius: 999px; padding: 7px 14px; font-size: 14px; font-family: inherit; cursor: pointer;
+}
+.topbtn:active { transform: scale(.95); }
+.page { padding: 4px 14px 96px; }
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+  padding: 14px 16px; margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(190, 150, 175, .12);
+}
+.card-title { font-size: 17px; font-weight: bold; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.card-title .more { margin-left: auto; font-size: 13px; color: var(--ink2); font-weight: normal; }
+.stage-badge {
+  font-size: 11px; font-weight: normal; color: #fff; border-radius: 999px;
+  padding: 1px 9px; background: var(--acc2); margin-left: 8px;
+}
+.quote-card { background: linear-gradient(135deg, var(--bg-a), var(--bg-b)); border: 1px solid var(--line); }
+.quote-text { font-family: "KaiTi", "STKaiti", serif; font-size: 21px; line-height: 1.6; }
+.quote-from { text-align: right; font-size: 13.5px; color: var(--ink2); margin-top: 6px; }
+.quote-note { font-size: 13px; color: var(--ink2); margin-top: 8px; border-top: 1px dashed var(--line); padding-top: 8px; }
+
+/* ---------- 概览与快捷 ---------- */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; font-size: 13.5px; }
+.chip b { color: var(--acc-deep); }
+.add-bar {
+  display: flex; align-items: center; gap: 8px; background: var(--card);
+  border: 1.5px dashed var(--acc2); border-radius: 14px; padding: 12px 14px;
+  color: var(--ink2); font-size: 15px; margin-bottom: 12px; cursor: pointer;
+}
+.quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.quick {
+  background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+  text-align: center; padding: 12px 4px; font-size: 13px; cursor: pointer;
+}
+.quick .qi { font-size: 24px; display: block; margin-bottom: 3px; }
+
+/* ---------- 时间轴（示例样式，阶段1接真实数据） ---------- */
+.tl-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--line); align-items: flex-start; }
+.tl-item:last-child { border-bottom: none; }
+.tl-time { width: 42px; font-size: 13px; color: var(--ink2); font-weight: bold; padding-top: 2px; }
+.tl-body { flex: 1; }
+.tl-name { font-size: 15.5px; }
+.tl-meta { font-size: 12.5px; color: var(--ink2); margin-top: 2px; }
+.tag { display: inline-block; border-radius: 999px; padding: 1px 9px; font-size: 12px; margin-right: 6px; }
+.t-work { background: #e7ecf9; color: #4a5f8a; }
+.t-life { background: #fdeee4; color: #9a6a4a; }
+.t-read { background: #efe6fa; color: #7a5a9e; }
+.t-health { background: #e6f2e0; color: #5a7a4a; }
+
+/* ---------- 更多页 ---------- */
+.menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 13px 6px;
+  border-bottom: 1px dashed var(--line); font-size: 15.5px; cursor: pointer;
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item .mi { font-size: 22px; }
+.menu-item .arrow { margin-left: auto; color: var(--ink2); }
+.menu-item .sub { font-size: 12.5px; color: var(--ink2); display: block; }
+.soon { background: var(--bg-b); color: var(--acc-deep); font-size: 11px; border-radius: 999px; padding: 1px 8px; margin-left: 8px; }
+
+/* ---------- 底部导航（手机） ---------- */
+.bottomnav {
+  position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+  width: min(520px, calc(100% - 20px)); display: flex; gap: 4px; padding: 6px;
+  background: var(--nav-bg); border: 1px solid var(--line);
+  border-radius: 22px; box-shadow: 0 10px 26px rgba(180, 140, 170, .25);
+  z-index: 100; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+}
+.bottomnav button {
+  flex: 1; border: none; background: none; border-radius: 16px;
+  padding: 7px 0 5px; font-family: inherit; font-size: 13px; color: var(--ink2);
+  display: flex; flex-direction: column; align-items: center; gap: 1px; cursor: pointer;
+}
+.bottomnav .ni { font-size: 21px; }
+.bottomnav button.on { background: linear-gradient(135deg, var(--acc1), var(--acc2)); color: #fff; }
+
+/* ---------- 主题选择弹层 ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 900; background: rgba(250, 244, 248, .97);
+  display: flex; align-items: center; justify-content: center; padding: 16px; overflow: auto;
+}
+.overlay-box {
+  background: var(--card); border: 2px solid var(--line); border-radius: 24px;
+  padding: 22px 20px; max-width: 520px; width: 100%; text-align: center;
+  box-shadow: 0 18px 50px rgba(170, 130, 160, .22);
+}
+.overlay-title { font-size: 26px; color: var(--acc-deep); font-family: "KaiTi", serif; margin-bottom: 4px; }
+.theme-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+.theme-card {
+  border: 3px solid var(--line); background: var(--card); border-radius: 18px;
+  padding: 12px 8px; cursor: pointer; display: flex; flex-direction: column;
+  align-items: center; gap: 8px; font-family: inherit; transition: transform .15s;
+}
+.theme-card:hover { transform: translateY(-3px); }
+.theme-card .sw { width: 100%; height: 52px; border-radius: 12px; border: 2px solid rgba(0, 0, 0, .05); }
+.theme-card span.tl2 { font-size: 15px; font-weight: bold; color: var(--ink); }
+.theme-card.selected { border-color: var(--acc-deep); box-shadow: 0 6px 16px rgba(170, 130, 160, .25); }
+
+/* ---------- 提示气泡 ---------- */
+.toast {
+  position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%) translateY(16px);
+  opacity: 0; background: rgba(87, 74, 82, .95); color: #fff; padding: 11px 22px;
+  border-radius: 999px; font-size: 15px; z-index: 1000; pointer-events: none;
+  transition: all .3s; max-width: 88vw; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.footnote { text-align: center; color: var(--ink2); font-size: 13px; padding: 4px 0 20px; }
+
+/* ---------- 阶段1：添加表单 / 任务列表 / 备份 ---------- */
+.af-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.af-grid input, .af-grid select {
+  border: 1.5px solid var(--line); border-radius: 12px; padding: 10px;
+  font-size: 15px; font-family: inherit; background: #fff; color: var(--ink); min-width: 0;
+}
+.af-grid input:focus, .af-grid select:focus { outline: none; border-color: var(--acc2); }
+#afName, #afNote { grid-column: 1 / -1; }
+.af-btns { display: flex; gap: 10px; justify-content: flex-end; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--acc1), var(--acc2)); color: #fff; border: none;
+}
+.empty-tip { color: var(--ink2); text-align: center; font-size: 14px; padding: 14px 0; }
+.day-group { font-size: 13.5px; color: var(--acc-deep); font-weight: bold; margin: 8px 2px 2px; }
+.tl-ops { display: flex; gap: 6px; align-items: center; }
+.op { border: none; border-radius: 999px; padding: 7px 13px; font-size: 13.5px; font-family: inherit; cursor: pointer; }
+.op:active { transform: scale(.94); }
+.op-done { background: linear-gradient(135deg, var(--acc1), var(--acc2)); color: #fff; }
+.op-green { background: linear-gradient(180deg, #6ec87a, #4caf7d); color: #fff; box-shadow: 0 2px 0 #3d9a6b; }
+.op-undo { background: var(--bg-b); color: var(--acc-deep); }
+.op-del { background: none; color: var(--ink2); font-size: 14px; padding: 7px 9px; }
+
+/* ⏱ 专注计时按钮（圆形，参考我学习我快乐） */
+.timer-btn {
+  width: 34px; height: 34px; border-radius: 50%; padding: 0;
+  border: 2px solid #b5dfc2; background: #fff; color: #3d9a6b;
+  font-size: 15px; font-family: inherit; cursor: pointer; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center; line-height: 1;
+}
+.timer-btn:hover { background: #eef9f1; }
+.timer-btn:active { transform: scale(.92); }
+
+/* 专注计时弹窗 */
+.focus-time {
+  font-size: 72px; font-weight: bold; text-align: center; margin: 8px 0 2px;
+  color: var(--acc-deep); font-variant-numeric: tabular-nums; letter-spacing: 2px;
+}
+.focus-task { font-size: 16.5px; text-align: center; color: var(--ink); }
+.focus-tip { font-size: 13.5px; text-align: center; color: var(--ink2); margin-bottom: 12px; }
+.focus-presets { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+.focus-presets button {
+  border: 1.5px solid var(--line); background: #fff; color: var(--ink2);
+  border-radius: 999px; padding: 7px 14px; font-size: 14px; font-family: inherit; cursor: pointer;
+}
+.focus-presets button.active { background: var(--acc1); border-color: var(--acc1); color: #fff; }
+.focus-done-tip { text-align: center; color: var(--acc-deep); font-size: 14px; margin-top: 14px; }
+.overdue-box {
+  border: 1.5px solid #f0c5c1; background: #fdf1ef; border-radius: 14px;
+  padding: 10px 12px; margin-bottom: 10px;
+}
+.overdue-title { color: var(--bad); font-weight: bold; font-size: 14px; margin-bottom: 4px; }
+.tl-done .tl-name { text-decoration: line-through; color: var(--ink2); }
+.tl-done .tag { text-decoration: none; }
+.pri { font-size: 12px; margin-right: 4px; }
+.pri-h { color: var(--bad); } .pri-m { color: #d98e2b; } .pri-l { color: var(--good); }
+
+/* ---------- 阶段2：速记 / 视图筛选 / 模板 / 重复 ---------- */
+.qnote-bar { display: flex; gap: 8px; }
+.qnote-bar input {
+  flex: 1; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  font-size: 15px; font-family: inherit; background: #fff; color: var(--ink); min-width: 0;
+}
+.qnote-bar input:focus { outline: none; border-color: var(--acc2); }
+.qnote-bar button {
+  border: none; border-radius: 12px; padding: 10px 16px;
+  background: linear-gradient(135deg, var(--acc1), var(--acc2)); color: #fff;
+  font-family: inherit; font-weight: bold; cursor: pointer;
+}
+.vchips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.vchip {
+  border: 1.5px solid var(--line); background: var(--card); color: var(--ink2);
+  border-radius: 999px; padding: 6px 15px; font-size: 14px; font-family: inherit; cursor: pointer;
+}
+.vchip.on { background: linear-gradient(135deg, var(--acc1), var(--acc2)); color: #fff; border-color: transparent; }
+.rep-badge { font-size: 11px; color: var(--acc-deep); background: var(--bg-b); border-radius: 999px; padding: 0 7px; margin-left: 6px; }
+.note-item {
+  display: flex; gap: 8px; align-items: center; padding: 8px 0;
+  border-bottom: 1px dashed var(--line); font-size: 14.5px;
+}
+.note-item:last-child { border-bottom: none; }
+.note-item .nt { flex: 1; word-break: break-all; }
+.note-item .nd { font-size: 12px; color: var(--ink2); white-space: nowrap; }
+.note-item button {
+  border: none; background: var(--bg-b); color: var(--acc-deep); border-radius: 999px;
+  padding: 4px 10px; font-size: 12.5px; cursor: pointer; font-family: inherit;
+}
+.prog { height: 8px; background: var(--bg-b); border-radius: 999px; overflow: hidden; }
+.prog > i { display: block; height: 100%; background: linear-gradient(90deg, var(--acc1), var(--acc2)); }
+#noteText, #taskNoteText {
+  width: 100%; min-height: 110px; border: 1.5px solid var(--line); border-radius: 12px;
+  padding: 10px; font-size: 15px; font-family: inherit; background: #fff; color: var(--ink);
+}
+#noteText:focus, #taskNoteText:focus { outline: none; border-color: var(--acc2); }
+
+/* 任务行主体可点击编辑备注 */
+.tl-body[data-note-id] { cursor: pointer; }
+.tl-body[data-note-id]:hover .tl-name { color: var(--acc-deep); }
+
+/* ---------- 阶段4：健康板块 ---------- */
+.stat-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; }
+.water-box {
+  flex: 1; min-width: 200px; background: var(--bg-a); border: 1px solid var(--line);
+  border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 14px;
+}
+.water-num { font-size: 40px; font-weight: bold; color: var(--acc-deep); line-height: 1; }
+.water-num small { font-size: 16px; color: var(--ink2); font-weight: normal; }
+.habit-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 0;
+  border-bottom: 1px dashed var(--line); font-size: 15.5px;
+}
+.habit-row:last-child { border-bottom: none; }
+.habit-row .hr-name { flex: 1; }
+.habit-check {
+  width: 42px; height: 42px; border-radius: 50%; border: 2px solid var(--line);
+  background: #fff; font-size: 20px; cursor: pointer; font-family: inherit;
+}
+.habit-check.on { background: linear-gradient(135deg, var(--acc1), var(--acc2)); border-color: transparent; }
+.hw-bars { display: flex; gap: 8px; align-items: flex-end; height: 90px; padding: 8px 2px 0; }
+.hw-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.hw-bar {
+  width: 100%; background: linear-gradient(180deg, var(--acc1), var(--acc2));
+  border-radius: 6px 6px 0 0; min-height: 3px;
+}
+.hw-val { font-size: 11px; color: var(--ink2); }
+.hw-day { font-size: 11px; color: var(--ink2); }
+
+/* ---------- 阶段5：理财记账 ---------- */
+.fin-bars { display: flex; gap: 6px; align-items: flex-end; height: 110px; padding: 8px 2px 0; }
+.fin-col { flex: 1; display: flex; gap: 3px; align-items: flex-end; justify-content: center; height: 100%; flex-direction: column; }
+.fin-pair { display: flex; gap: 3px; align-items: flex-end; flex: 1; width: 100%; justify-content: center; }
+.fin-b { width: 38%; border-radius: 4px 4px 0 0; min-height: 3px; }
+.fin-b.out { background: linear-gradient(180deg, var(--acc1), var(--acc2)); }
+.fin-b.in { background: linear-gradient(180deg, #a8d29a, var(--good)); }
+.fin-mon { font-size: 11px; color: var(--ink2); }
+.cat-row { display: flex; align-items: center; gap: 8px; font-size: 13.5px; padding: 4px 0; }
+.cat-row .cn { width: 58px; color: var(--ink); }
+.cat-row .cv { width: 74px; text-align: right; color: var(--ink2); }
+.rec-amt-out { color: var(--acc-deep); font-weight: bold; }
+.rec-amt-in { color: var(--good); font-weight: bold; }
+
+/* ---------- 阶段6：积分森林 ---------- */
+.tree-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.tree-row:last-child { border-bottom: none; }
+.tree-emoji { font-size: 34px; width: 44px; text-align: center; }
+.tree-dots { font-size: 12px; color: var(--acc-deep); letter-spacing: 2px; }
+.rw-row {
+  display: flex; align-items: center; gap: 8px; padding: 9px 0;
+  border-bottom: 1px dashed var(--line); font-size: 15px;
+}
+.rw-row:last-child { border-bottom: none; }
+
+/* ---------- 树林全景：CSS 画完整大树 ---------- */
+.grove {
+  background: linear-gradient(180deg, #ecf7ff 0 58%, #d9edc6 58% 100%);
+  border: 1px solid var(--line); border-radius: 18px;
+  padding: 12px 8px 12px; margin-top: 10px;
+  display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: center; align-items: flex-end;
+  min-height: 160px; max-height: 340px; overflow-y: auto;   /* 树多时可上下滑动 */
+}
+.grove-empty { color: var(--ink2); font-size: 14px; align-self: center; padding: 20px 0; }
+.gtree { width: 104px; display: flex; flex-direction: column; align-items: center; }
+.gtree-name { font-size: 12.5px; color: var(--ink); margin-top: 2px; font-weight: bold; }
+.gtree-sub { font-size: 11px; color: var(--ink2); }
+.tree-art { position: relative; width: 96px; height: 118px; }
+.tree-art div { position: absolute; }
+.ta-ground { left: 16px; bottom: 0; width: 64px; height: 12px; background: #cbb79a; border-radius: 50%; }
+.ta-seed { left: 44px; bottom: 6px; width: 9px; height: 11px; background: #9c7b4f; border-radius: 50%; display: none; }
+.ta-trunk { left: 43px; bottom: 8px; width: 10px; background: linear-gradient(90deg, #8d6a4f, #a5825f); border-radius: 5px; height: 0; }
+.ta-sprout { background: #86b96f; border-radius: 50%; display: none; }
+.ta-leaf { border-radius: 50%; background: linear-gradient(180deg, #8fc47c, #6da75e); display: none; }
+.ta-cone { clip-path: polygon(50% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, #5f8f62, #476e4a); display: none; }
+.ta-fruit { width: 9px; height: 9px; border-radius: 50%; background: #e05348; display: none; }
+/* 阶段 0：土里的种子 */
+.st0 .ta-seed { display: block; }
+/* 阶段 1：绿茎 + 两片嫩叶 */
+.st1 .ta-trunk { height: 12px; width: 5px; left: 45px; background: #86b96f; }
+.st1 .ta-sprout { display: block; width: 12px; height: 12px; }
+.st1 .ta-sprout.s1 { left: 33px; bottom: 15px; }
+.st1 .ta-sprout.s2 { left: 50px; bottom: 17px; }
+/* 阶段 2：树干 + 小树冠 */
+.st2 .ta-trunk { height: 22px; }
+.st2 .ta-leaf.l1 { display: block; width: 38px; height: 34px; left: 29px; bottom: 26px; }
+/* 阶段 3：更高的干 + 三团圆冠 */
+.st3 .ta-trunk { height: 30px; }
+.st3 .ta-leaf.l1 { display: block; width: 48px; height: 42px; left: 24px; bottom: 34px; }
+.st3 .ta-leaf.l2 { display: block; width: 34px; height: 30px; left: 13px; bottom: 28px; }
+.st3 .ta-leaf.l3 { display: block; width: 34px; height: 30px; left: 49px; bottom: 28px; }
+/* 阶段 4：成形大树 */
+.st4 .ta-trunk { height: 40px; }
+.st4 .ta-leaf.l1 { display: block; width: 58px; height: 50px; left: 19px; bottom: 44px; }
+.st4 .ta-leaf.l2 { display: block; width: 42px; height: 36px; left: 5px; bottom: 36px; }
+.st4 .ta-leaf.l3 { display: block; width: 42px; height: 36px; left: 49px; bottom: 36px; }
+/* 樱花树：粉色云冠 + 深粉花朵 */
+.k-sakura .ta-leaf { background: linear-gradient(180deg, #f7c3d6, #ee9cba); }
+.k-sakura .ta-fruit { background: #d96a9c; width: 8px; height: 8px; }
+/* 果树：绿冠挂红苹果；樱花挂粉朵（只在成形期显示） */
+.k-sakura.st4 .ta-fruit, .k-fruit.st4 .ta-fruit { display: block; }
+.k-sakura.st4 .ta-fruit.f1, .k-fruit.st4 .ta-fruit.f1 { left: 33px; bottom: 64px; }
+.k-sakura.st4 .ta-fruit.f2, .k-fruit.st4 .ta-fruit.f2 { left: 47px; bottom: 54px; }
+.k-sakura.st4 .ta-fruit.f3, .k-fruit.st4 .ta-fruit.f3 { left: 25px; bottom: 48px; }
+/* 常青树：三层松塔替代圆冠 */
+.k-evergreen .ta-leaf { display: none !important; }
+.k-evergreen.st2 .ta-cone.c3 { display: block; left: 32px; bottom: 26px; width: 32px; height: 26px; }
+.k-evergreen.st3 .ta-cone.c3 { display: block; left: 30px; bottom: 30px; width: 36px; height: 30px; }
+.k-evergreen.st3 .ta-cone.c2 { display: block; left: 26px; bottom: 52px; width: 44px; height: 32px; }
+.k-evergreen.st4 .ta-cone.c3 { display: block; left: 29px; bottom: 30px; width: 38px; height: 32px; }
+.k-evergreen.st4 .ta-cone.c2 { display: block; left: 24px; bottom: 56px; width: 48px; height: 34px; }
+.k-evergreen.st4 .ta-cone.c1 { display: block; left: 19px; bottom: 82px; width: 58px; height: 34px; }
+/* 微风摇曳 */
+@keyframes treesway { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+.tree-art .ta-leaf, .tree-art .ta-cone { transform-origin: 50% 100%; animation: treesway 4.5s ease-in-out infinite; }
+.st3 .ta-trunk, .st4 .ta-trunk { transform-origin: 50% 100%; animation: treesway 5.5s ease-in-out infinite; }
+
+/* ---------- 电脑端 ---------- */
+@media (min-width: 900px) {
+  .bottomnav { display: none; }
+  .page { padding: 4px 22px 40px; }
+  .sidebar {
+    display: flex; flex-direction: column; width: 216px; flex: none;
+    background: var(--nav-bg); border-right: 1px solid var(--line);
+    padding: 22px 14px; min-height: 100vh; position: sticky; top: 0;
+  }
+  .side-brand { font-family: "KaiTi", serif; font-size: 30px; color: var(--acc-deep); text-align: center; padding: 10px 0 18px; letter-spacing: 2px; }
+  .side-nav { display: flex; flex-direction: column; gap: 6px; }
+  .side-nav button {
+    border: none; background: none; text-align: left; font-family: inherit;
+    font-size: 16px; color: var(--ink2); padding: 11px 16px; border-radius: 14px;
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+  }
+  .side-nav button.on { background: linear-gradient(135deg, var(--acc1), var(--acc2)); color: #fff; }
+  .home-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 14px; align-items: start; }
+}
+</style>
+</head>
+<body class="theme-sakura">
+
+<div class="app">
+  <!-- 电脑端左侧边栏 -->
+  <aside class="sidebar">
+    <div class="side-brand">花间时光</div>
+    <nav class="side-nav">
+      <button class="on" data-page="home">🌸 首页 · 今日</button>
+      <button data-page="task">📋 任务</button>
+      <button data-page="read">📖 阅读</button>
+      <button data-page="health">🌿 健康</button>
+      <button data-page="more">🌼 更多</button>
+    </nav>
+  </aside>
+
+  <div class="mainwrap" style="flex:1; min-width:0;">
+    <header class="topbar">
+      <h1 class="brand">花间时光<small id="dateLine">…</small></h1>
+      <div>
+        <button class="topbtn" id="quickNoteBtn">＋ 记一笔</button>
+        <button class="topbtn" id="themeBtn">🎨</button>
+      </div>
+    </header>
+
+    <!-- 添加任务表单（全局，任意页面可打开） -->
+    <div class="card" id="addFormCard" hidden style="margin: 0 14px 12px;">
+      <div class="card-title">✏️ 新任务</div>
+      <div class="af-grid">
+        <input id="afName" type="text" maxlength="50" placeholder="任务名称，如：批改作文42本">
+        <input id="afCat" type="text" list="catList" maxlength="8" placeholder="类别：工作">
+        <datalist id="catList">
+          <option>工作</option><option>生活</option><option>阅读</option><option>健康</option>
+        </datalist>
+        <select id="afPri" title="优先级">
+          <option value="high">高优先</option><option value="mid" selected>中优先</option><option value="low">低优先</option>
+        </select>
+        <input id="afPts" type="number" min="1" max="50" value="5" title="完成可得积分">
+        <input id="afDate" type="date" title="日期">
+        <input id="afTime" type="time" title="开始时间（可不填）">
+        <select id="afRepeat" title="重复">
+          <option value="" selected>不重复</option>
+          <option value="daily">每天重复</option>
+          <option value="w1">每周一</option><option value="w2">每周二</option>
+          <option value="w3">每周三</option><option value="w4">每周四</option>
+          <option value="w5">每周五</option><option value="w6">每周六</option>
+          <option value="w7">每周日</option>
+        </select>
+        <input id="afNote" type="text" maxlength="100" placeholder="备注（可不填）">
+      </div>
+      <div class="af-btns">
+        <button class="topbtn" id="afCancel" type="button">取消</button>
+        <button class="topbtn btn-primary" id="afSave" type="button">💾 保存任务</button>
+      </div>
+    </div>
+
+    <!-- ============ 首页 ============ -->
+    <section class="page" id="p-home">
+      <div class="home-grid">
+        <div>
+          <div class="add-bar" id="homeAddBar">✏️ 想到什么，点这里快速添加任务…（名称 · 类别 · 时间 · 积分）</div>
+
+          <div class="card">
+            <div class="card-title">🗓 今日安排<span class="more"><span id="todayLabel"></span> · <span id="histLink" style="color:var(--acc-deep);cursor:pointer;">历史记录 ›</span></span></div>
+            <div class="overdue-box" id="overdueBox" hidden></div>
+            <div id="todoList"></div>
+            <div class="day-group" id="doneHead" hidden>✅ 已完成</div>
+            <div id="doneList"></div>
+            <p class="empty-tip" id="homeEmpty">今天还没有任务，点上面的添加条开始吧 🌸</p>
+          </div>
+        </div>
+        <div>
+          <div class="card quote-card" id="homeQuoteCard" style="cursor:pointer;">
+            <div class="quote-text" id="homeQuoteText">…</div>
+            <div class="quote-from" id="homeQuoteFrom"></div>
+            <div class="quote-note">每天一句 · 点击进入阅读板块（收藏 · 复习 · 笔记）</div>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 今日概览</div>
+            <div class="chips">
+              <span class="chip">待办 <b id="ovTodo">0</b></span>
+              <span class="chip">已完成 <b id="ovDone">0</b></span>
+              <span class="chip">今日积分 <b id="ovPoints">+0</b></span>
+              <span class="chip">过期 <b id="ovOverdue" style="color:var(--bad)">0</b></span>
+              <span class="chip">喝水 <b><span id="ovWater">0</span>/<span id="ovWaterGoal">8</span></b> 杯</span>
+              <span class="chip">⏱ 专注 <b id="ovFocus">0</b> 分钟</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚡ 快捷入口</div>
+            <div class="quick-grid">
+              <div class="quick" id="qkMoney"><span class="qi">💰</span>记一笔</div>
+              <div class="quick" id="qkWater"><span class="qi">💧</span>喝水+1</div>
+              <div class="quick" id="qkForest"><span class="qi">🌱</span>我的森林</div>
+              <div class="quick" id="qkRead"><span class="qi">📖</span>今日诗句</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 任务 ============ -->
+    <section class="page" id="p-task" hidden>
+      <div class="card">
+        <div class="card-title">⚡ 工作速记</div>
+        <div class="qnote-bar">
+          <input id="qnoteInput" type="text" maxlength="60" placeholder="想到什么先记一句，如：明天带彩色粉笔 / 3班家长来电话">
+          <button id="qnoteSave" type="button">记下</button>
+        </div>
+        <div id="qnoteList" style="margin-top:6px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 任务清单
+          <span class="more" id="taskViewLabel"></span>
+          <button class="op op-done" id="taskAddBtn" type="button" style="margin-left:8px;">➕ 添加</button>
+        </div>
+        <div class="vchips" id="viewChips">
+          <button class="vchip on" data-view="today" type="button">今天</button>
+          <button class="vchip" data-view="tomorrow" type="button">明天</button>
+          <button class="vchip" data-view="future" type="button">未来7天</button>
+        </div>
+        <div class="vchips" id="catChips"></div>
+        <div class="overdue-box" id="taskOverdueBox" hidden></div>
+        <div id="taskListBody"></div>
+        <p class="empty-tip" id="taskEmpty" hidden></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 常用模板</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="topbtn" id="tplSaveToday" type="button">⭐ 存今天的任务为模板</button>
+          <button class="topbtn" id="tplAddAll" type="button">➕ 一键加到今天</button>
+        </div>
+        <div id="tplList"></div>
+        <p class="empty-tip" id="tplEmpty">还没有模板。每天任务差不多的话，存一次模板，以后一键添加。</p>
+      </div>
+
+      <div class="card" id="repeatCard" hidden>
+        <div class="card-title">🔁 重复任务</div>
+        <div id="repeatList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📜 工作记录<span class="more" id="histSummary"></span></div>
+        <div id="historyList"></div>
+        <p class="empty-tip" id="historyEmpty" hidden>还没有历史记录。用几天之后，这里就能按天回看完成的工作和积分啦 🌸</p>
+      </div>
+    </section>
+
+    <!-- ============ 阅读 ============ -->
+    <section class="page" id="p-read" hidden>
+      <div class="card quote-card">
+        <div class="quote-text" id="dailyQuote">…</div>
+        <div class="quote-from" id="dailyFrom"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="op op-done" id="qFavBtn" type="button">❤ 收藏</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 阅读统计</div>
+        <div class="chips">
+          <span class="chip">累计读完 <b id="rsBooks">0</b> 本</span>
+          <span class="chip">今年读完 <b id="rsYear">0</b> 本</span>
+          <span class="chip">本月阅读 <b id="rsMonth">0</b> 分钟</span>
+          <span class="chip">收藏名句 <b id="rsFav">0</b> 条</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📚 在读书目</div>
+        <div id="bookList"></div>
+        <div class="af-grid" style="margin-top:10px;">
+          <input id="bkTitle" type="text" maxlength="30" placeholder="书名，如：人间草木">
+          <input id="bkAuthor" type="text" maxlength="20" placeholder="作者（可不填）">
+          <input id="bkTotal" type="number" min="1" placeholder="总页数">
+          <button class="topbtn btn-primary" id="bkAdd" type="button">➕ 添加书</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✨ 素材积累本</div>
+        <div class="af-grid">
+          <select id="mtType" title="类型">
+            <option>成语典故</option><option>写作素材</option><option>修辞手法</option>
+            <option>文学常识</option><option>课堂灵感</option>
+          </select>
+          <input id="mtText" type="text" maxlength="120" placeholder="内容，如：囊萤映雪——车胤借萤光读书">
+          <button class="topbtn btn-primary" id="mtAdd" type="button">➕ 记下</button>
+        </div>
+        <div id="mtList"></div>
+      </div>
+
+      <!-- 名句库（默认折叠） -->
+      <div class="card">
+        <button class="topbtn" id="libToggle" type="button" style="width:100%;padding:14px;">📖 打开名句库（1002 条可搜索） ▼</button>
+        <div id="libBody" hidden>
+          <div class="day-group">📖 名句库<span class="more" id="quoteCount" style="margin-left:8px;"></span></div>
+          <div class="qnote-bar" style="margin:8px 0;">
+            <input id="qSearch" type="text" maxlength="20" placeholder="搜名句 / 作者 / 篇名，如：李白">
+          </div>
+          <div style="margin-bottom:8px;">
+            <button class="vchip" id="qFilterBtn" type="button">🎛 筛选（主题 · 朝代）</button>
+          </div>
+          <div id="qFilters" hidden>
+            <div class="vchips" id="qThemeChips"></div>
+            <div class="vchips" id="qDynChips"></div>
+          </div>
+          <div id="quoteList"></div>
+          <button class="topbtn" id="qMore" type="button" style="width:100%;margin-top:6px;">加载更多 ⬇</button>
+
+          <div class="day-group" style="margin-top:14px;">✍ 我添加的名句</div>
+          <div class="af-grid">
+            <input id="uqText" type="text" maxlength="60" placeholder="名句内容">
+            <input id="uqFrom" type="text" maxlength="30" placeholder="作者·篇名，如：李白《静夜思》">
+            <button class="topbtn btn-primary" id="uqAdd" type="button">➕ 添加</button>
+          </div>
+          <div id="uqList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 健康 ============ -->
+    <section class="page" id="p-health" hidden>
+      <div class="card">
+        <div class="card-title">💧 今日喝水<span class="more" id="waterGoalLine">目标 8 杯</span></div>
+        <div class="water-box">
+          <div class="water-num"><span id="waterNow">0</span><small> / <span id="waterGoalNum">8</span> 杯</small></div>
+          <div style="flex:1;">
+            <div class="prog"><i id="waterProg" style="width:0%"></i></div>
+            <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+              <button class="op op-done" id="waterAdd" type="button">💧 +1 杯</button>
+              <button class="op op-undo" id="waterUndo" type="button">− 撤销 1 杯</button>
+              <button class="op op-undo" id="waterGoalBtn" type="button">🎯 改目标</button>
+            </div>
+          </div>
+        </div>
+        <div class="af-grid" id="waterGoalBox" hidden style="margin-top:10px;">
+          <input id="waterGoalInput" type="text" inputmode="numeric" placeholder="每天目标杯数，如：8">
+          <button class="topbtn btn-primary" id="waterGoalSave" type="button">保存目标</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✅ 今日习惯打卡<span class="more" id="habitTodayLine"></span></div>
+        <div id="habitList"></div>
+        <div class="af-grid" style="margin-top:10px;">
+          <input id="habitName" type="text" maxlength="20" placeholder="新习惯名称，如：跳绳 500 个">
+          <button class="topbtn btn-primary" id="habitAdd" type="button">➕ 添加习惯</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">😴 昨晚入睡<span class="more" id="sleepLine">今天还没记录</span></div>
+        <div class="vchips" id="sleepChips">
+          <button class="vchip" data-sleep="22点前" type="button">22点前 😊</button>
+          <button class="vchip" data-sleep="23点前" type="button">23点前 🙂</button>
+          <button class="vchip" data-sleep="24点前" type="button">24点前 😐</button>
+          <button class="vchip" data-sleep="24点后" type="button">24点后 😪</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📈 近 7 天喝水趋势</div>
+        <div class="hw-bars" id="waterBars"></div>
+        <div class="tl-meta" id="habitWeekLine" style="margin-top:6px;"></div>
+      </div>
+    </section>
+
+    <!-- ============ 更多 ============ -->
+    <section class="page" id="p-more" hidden>
+      <div class="card">
+        <div class="card-title">⭐ 积分总览</div>
+        <div class="vchips" id="ptRangeChips">
+          <button class="vchip on" data-ptr="today" type="button">今日</button>
+          <button class="vchip" data-ptr="week" type="button">本周</button>
+          <button class="vchip" data-ptr="month" type="button">本月</button>
+          <button class="vchip" data-ptr="year" type="button">本年</button>
+        </div>
+        <div class="chips">
+          <span class="chip">获得积分 <b id="ptEarn">+0</b></span>
+          <span class="chip">完成任务 <b id="ptDone">0</b> 项</span>
+          <span class="chip">当前余额 <b id="ptBal">0</b> ✨</span>
+        </div>
+        <div class="tl-meta" style="margin-top:6px;">完成任务得积分（每项只领一次）；兑换奖励、种树、浇水都会记录明细，积分不会变成负数。</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎁 奖励商店</div>
+        <div id="rwList"></div>
+        <div class="af-grid" style="margin-top:10px;">
+          <input id="rwName" type="text" maxlength="20" placeholder="奖励名称，如：看一场电影">
+          <input id="rwCost" type="text" inputmode="numeric" placeholder="所需积分，如：60">
+          <button class="topbtn btn-primary" id="rwAdd" type="button">➕ 添加奖励</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌱 成长森林<span class="more" id="forestLine"></span></div>
+        <div class="tl-meta">花积分种一棵树，它<b>每天自动长一级</b>（种子→发芽→幼苗→小树→成形）；等不及可花 2 积分💧浇水加速一级。</div>
+        <div class="vchips" id="treeKinds" style="margin-top:8px;"></div>
+        <div id="treeList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📒 积分明细<span class="more" id="ptCount"></span></div>
+        <div id="ptLedger"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 理财记账<span class="more" id="finMonthLabel"></span></div>
+        <div class="chips">
+          <span class="chip">本月支出 <b id="finOut">¥0</b></span>
+          <span class="chip">收入 <b id="finIn">¥0</b></span>
+          <span class="chip">结余 <b id="finBal">¥0</b></span>
+        </div>
+        <div style="margin-top:10px;">
+          <div class="tl-meta">月度预算：<b id="budgetText">未设置</b>
+            <button class="op op-undo" id="budgetBtn" type="button" style="margin-left:6px;">设置</button>
+          </div>
+          <div class="prog" style="margin-top:4px;"><i id="budgetBar" style="width:0%"></i></div>
+          <div class="tl-meta" id="budgetTip"></div>
+        </div>
+        <div class="af-grid" id="budgetBox" hidden style="margin-top:8px;">
+          <input id="budgetInput" type="text" inputmode="numeric" placeholder="每月预算，如：3000" style="grid-column:1/-1;">
+          <button class="topbtn btn-primary" id="budgetSave" type="button">保存预算</button>
+          <button class="topbtn" id="budgetClear" type="button">清除预算</button>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="op op-done" id="finAddBtn" type="button">➕ 记一笔</button>
+        </div>
+        <div class="tl-meta" style="margin-top:8px;">财务数据单独保存，与任务积分完全分开，不联网、不发给任何第三方。</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 近 6 个月收支</div>
+        <div class="fin-bars" id="finBars"></div>
+        <div class="tl-meta" style="margin-top:4px;"><span style="color:var(--acc-deep);">■ 支出</span>　<span style="color:var(--good);">■ 收入</span></div>
+        <div class="day-group" style="margin-top:10px;">🏷 本月支出分类</div>
+        <div id="finCats"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧾 收支明细<span class="more" id="finCount"></span></div>
+        <div id="finList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💾 数据备份</div>
+        <div class="tl-meta" id="lastBackupLine">上次备份：从未</div>
+        <div style="display:flex;gap:10px;margin:10px 0 8px;flex-wrap:wrap;">
+          <button class="topbtn" id="exportBtn" type="button">⬇ 导出备份文件</button>
+          <button class="topbtn" id="importBtn" type="button">⬆ 从备份恢复</button>
+        </div>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+        <div class="tl-meta">导出的 JSON 文件请存到微信收藏或网盘；恢复会先经您确认，然后覆盖当前全部数据。</div>
+      </div>
+      <div class="card">
+        <div class="menu-item" id="menuTheme"><span class="mi">🎨</span>主题装扮<span class="sub">樱花 / 紫藤 / 森林 / 奶油</span><span class="arrow">›</span></div>
+        <div class="menu-item" data-soon="待后续确认后设计"><span class="mi">🤖</span>AI 助手<span class="soon">预留 · 未接入</span><span class="arrow">›</span></div>
+        <div class="menu-item" data-soon="待息流接口确认后评估"><span class="mi">🔗</span>外部协作<span class="soon">预留 · 未接入</span><span class="arrow">›</span></div>
+        <div class="menu-item" data-soon="感谢试用 💐"><span class="mi">ℹ️</span>关于花间时光<span class="arrow">›</span></div>
+      </div>
+    </section>
+
+    <p class="footnote">花间时光 · 阶段 1 工作台版 ｜ 任务与积分已真实保存 ｜ 备份在「更多」页</p>
+  </div>
+</div>
+
+<!-- 手机端底部导航 -->
+<nav class="bottomnav">
+  <button class="on" data-page="home"><span class="ni">🌸</span>首页</button>
+  <button data-page="task"><span class="ni">📋</span>任务</button>
+  <button data-page="read"><span class="ni">📖</span>阅读</button>
+  <button data-page="health"><span class="ni">🌿</span>健康</button>
+  <button data-page="more"><span class="ni">🌼</span>更多</button>
+</nav>
+
+<!-- 主题选择 -->
+<div class="overlay" id="themeOverlay" hidden>
+  <div class="overlay-box">
+    <h2 class="overlay-title">🎨 主题装扮</h2>
+    <div class="theme-grid" id="themeGrid"></div>
+    <button class="topbtn" id="themeClose" style="padding:9px 30px;">完成</button>
+  </div>
+</div>
+
+<!-- 专注计时 -->
+<div class="overlay" id="focusOverlay" hidden>
+  <div class="overlay-box" style="max-width:460px;">
+    <h2 class="overlay-title">⏱ 专注时间</h2>
+    <p class="focus-task" id="focusTaskName"></p>
+    <div class="focus-time" id="focusDisplay">20:00</div>
+    <p class="focus-tip" id="focusTip">选定时长，开始专注，不要走开哦 🌸</p>
+    <div class="focus-presets" id="focusPresets">
+      <button type="button" data-min="10">10分钟</button>
+      <button type="button" data-min="20" class="active">20分钟</button>
+      <button type="button" data-min="30">30分钟</button>
+      <button type="button" data-min="40">40分钟</button>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button class="topbtn" id="focusCancel" type="button">返回</button>
+      <button class="topbtn btn-primary" id="focusStart" type="button" style="font-size:16px;">🚀 开始专注</button>
+    </div>
+    <div style="margin-top:16px;" id="focusHold" hidden>
+      <button class="topbtn" id="focusHoldBtn" type="button" style="width:100%;">🙈 长按3秒才能退出</button>
+    </div>
+  </div>
+</div>
+
+<!-- 任务备注 -->
+<div class="overlay" id="taskNoteOverlay" hidden>
+  <div class="overlay-box" style="max-width:460px;">
+    <h2 class="overlay-title">✎ 任务备注</h2>
+    <p class="focus-task" id="taskNoteName"></p>
+    <textarea id="taskNoteText" maxlength="200" placeholder="补充细节，如：要交的材料、三班情况、下一步打算……"></textarea>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;">
+      <button class="topbtn" id="taskNoteClose" type="button">取消</button>
+      <button class="topbtn btn-primary" id="taskNoteSave" type="button">保存备注</button>
+    </div>
+  </div>
+</div>
+
+<!-- 名句笔记 -->
+<div class="overlay" id="noteOverlay" hidden>
+  <div class="overlay-box">
+    <h2 class="overlay-title">📝 名句笔记</h2>
+    <textarea id="noteText" maxlength="200" placeholder="写点感想、赏析或课堂灵感……"></textarea>
+    <div style="margin-top:12px;display:flex;gap:10px;justify-content:center;">
+      <button class="topbtn" id="noteClose" type="button">取消</button>
+      <button class="topbtn btn-primary" id="noteSave" type="button">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 记一笔 -->
+<div class="overlay" id="finOverlay" hidden>
+  <div class="overlay-box">
+    <h2 class="overlay-title">💰 记一笔</h2>
+    <div class="vchips" id="finType">
+      <button class="vchip on" data-ftype="out" type="button">支出</button>
+      <button class="vchip" data-ftype="in" type="button">收入</button>
+    </div>
+    <div class="af-grid">
+      <input id="finAmount" type="text" inputmode="decimal" placeholder="金额，如：25.5" style="grid-column:1/-1;font-size:20px;">
+      <select id="finCat" title="分类"></select>
+      <input id="finDate" type="date" title="日期">
+      <input id="finNote" type="text" maxlength="30" placeholder="备注（可不填）" style="grid-column:1/-1;">
+    </div>
+    <div class="tl-meta" style="margin-top:6px;">账户</div>
+    <div class="vchips" id="finAcc"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:12px;">
+      <button class="topbtn" id="finCancel" type="button">取消</button>
+      <button class="topbtn btn-primary" id="finSave" type="button">💾 保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   花间时光 · 阶段 0：主题框架 + 页面导航（数据功能阶段 1 起）
+   保存内容（localStorage，键名 huajian_settings）：
+   主题选择、上次停留的页面
+   ========================================================= */
+
+const STORE_KEY = 'huajian_settings';
+
+const THEMES = {
+  sakura:  { label: '樱花粉', sw: 'linear-gradient(135deg,#f2b8cd,#c9a7e0)' },
+  wisteria:{ label: '紫藤紫', sw: 'linear-gradient(135deg,#d9c3ee,#9272c9)' },
+  forest:  { label: '森林绿', sw: 'linear-gradient(135deg,#cfe3c8,#5f8a52)' },
+  cream:   { label: '奶油白', sw: 'linear-gradient(135deg,#f0d9b8,#b07f4f)' },
+};
+
+const PAGES = ['home', 'task', 'read', 'health', 'more'];
+const $ = (id) => document.getElementById(id);
+
+let settings = { theme: 'sakura', lastPage: 'home', focus: { date: '', min: 0 } };
+try {
+  const raw = localStorage.getItem(STORE_KEY);
+  if (raw) {
+    const s = JSON.parse(raw);
+    if (s && THEMES[s.theme]) settings.theme = s.theme;
+    if (s && PAGES.includes(s.lastPage)) settings.lastPage = s.lastPage;
+    if (s && s.focus && s.focus.date) settings.focus = { date: s.focus.date, min: s.focus.min || 0 };
+  }
+} catch (e) { console.warn('读取设置失败', e); }
+
+function saveSettings() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(settings)); }
+  catch (e) { console.warn('保存设置失败', e); }
+}
+
+/* ---------- 提示气泡 ---------- */
+let toastTimer = null;
+function showToast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* =========================================================
+   阶段 1：任务与积分（真实数据，本地保存）
+   存储：huajian_tasks（任务列表）、huajian_points（积分余额+明细）
+   ========================================================= */
+const TASKS_KEY = 'huajian_tasks';
+const POINTS_KEY = 'huajian_points';
+const TPL_KEY = 'huajian_templates';
+const NOTES_KEY = 'huajian_notes';
+
+// 类别：内置四类 + 自定义类别（自动配柔和底色）
+const CAT_DEFS = { '工作': 't-work', '生活': 't-life', '阅读': 't-read', '健康': 't-health' };
+const CAT_BG = ['#e7ecf9', '#fdeee4', '#efe6fa', '#e6f2e0', '#fdf3d8', '#e3f0ef'];
+const OLD_CAT_KEYS = { work: '工作', life: '生活', read: '阅读', health: '健康' };
+
+function tagHTML(cat) {
+  cat = cat || '工作';
+  if (CAT_DEFS[cat]) return '<span class="tag ' + CAT_DEFS[cat] + '">' + cat + '</span>';
+  let s = 0;
+  for (const c of cat) s = (s * 31 + c.charCodeAt(0)) >>> 0;
+  return '<span class="tag" style="background:' + CAT_BG[s % CAT_BG.length] + ';color:#5a5060">' + esc(cat) + '</span>';
+}
+
+const PRIS = { high: ['高', 'pri-h'], mid: ['中', 'pri-m'], low: ['低', 'pri-l'] };
+
+function repeatLabel(r) {
+  if (r === 'daily') return '每天';
+  const w = { w1: '周一', w2: '周二', w3: '周三', w4: '周四', w5: '周五', w6: '周六', w7: '周日' };
+  return w[r] ? '每周' + w[r] : '';
+}
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function fmtD(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function todayStr() { return fmtD(new Date()); }
+function nowHM() { const d = new Date(); return pad2(d.getHours()) + ':' + pad2(d.getMinutes()); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+function loadTasks() {
+  try {
+    const r = localStorage.getItem(TASKS_KEY);
+    if (r) {
+      const arr = JSON.parse(r);
+      return arr.map((t) => ({
+        ...t,
+        category: OLD_CAT_KEYS[t.category] || t.category || '工作',
+        skippedDates: Array.isArray(t.skippedDates) ? t.skippedDates : [],
+      }));
+    }
+  } catch (e) { }
+  return [];
+}
+function saveTasks() { localStorage.setItem(TASKS_KEY, JSON.stringify(tasks)); }
+
+function loadTemplates() {
+  try { const r = localStorage.getItem(TPL_KEY); if (r) return JSON.parse(r); } catch (e) { }
+  return [];
+}
+function saveTemplates() { localStorage.setItem(TPL_KEY, JSON.stringify(templates)); }
+
+function loadNotes() {
+  try { const r = localStorage.getItem(NOTES_KEY); if (r) return JSON.parse(r); } catch (e) { }
+  return [];
+}
+function saveNotes() { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); }
+
+function loadPoints() {
+  try { const r = localStorage.getItem(POINTS_KEY); if (r) { const p = JSON.parse(r); return { balance: Number(p.balance) || 0, ledger: Array.isArray(p.ledger) ? p.ledger : [] }; } } catch (e) { }
+  return { balance: 0, ledger: [] };
+}
+function savePoints() { localStorage.setItem(POINTS_KEY, JSON.stringify(pointsStore)); }
+
+let tasks = loadTasks();
+let pointsStore = loadPoints();
+let templates = loadTemplates();
+let notes = loadNotes();
+
+/* ---------- 添加任务表单 ---------- */
+function openAddForm(defaultDate) {
+  $('afDate').value = defaultDate || todayStr();
+  updateCatDatalist();
+  $('addFormCard').hidden = false;
+  $('afName').focus();
+}
+function closeAddForm() { $('addFormCard').hidden = true; }
+
+function saveTaskFromForm() {
+  const name = $('afName').value.trim();
+  if (!name) { showToast('先写上任务名称哦～'); $('afName').focus(); return; }
+  const date = $('afDate').value || todayStr();
+  const cat = $('afCat').value.trim() || '工作';
+  let pts = parseInt($('afPts').value, 10);
+  if (isNaN(pts) || pts < 1) pts = 5;
+  pts = Math.min(50, pts);
+  const repeat = $('afRepeat').value;
+  const base = {
+    name, category: cat, date, time: $('afTime').value || '',
+    priority: PRIS[$('afPri').value] ? $('afPri').value : 'mid',
+    points: pts, note: $('afNote').value.trim(),
+  };
+  if (repeat) {
+    // 重复任务：保存为"源头"，之后每天/每周自动生成当天的新任务
+    tasks.push({ id: uid(), ...base, done: false, doneAt: '', isRepeatSource: true, repeat, skippedDates: [] });
+    saveTasks();
+    ensureRepeats();
+    showToast('重复任务已创建：' + repeatLabel(repeat) + '自动出现 🔁');
+  } else {
+    tasks.push({ id: uid(), ...base, done: false, doneAt: '' });
+    saveTasks();
+    showToast('任务已保存：' + name + ' 🌸');
+  }
+  $('afName').value = ''; $('afTime').value = ''; $('afNote').value = ''; $('afPts').value = 5; $('afRepeat').value = '';
+  closeAddForm();
+  refreshAll();
+}
+
+/* ---------- 重复任务引擎：到点自动生成当天的任务 ---------- */
+function ensureRepeats() {
+  const T = todayStr();
+  const d = new Date();
+  const dow = 'w' + (d.getDay() === 0 ? 7 : d.getDay());   // 周一=w1 … 周日=w7
+  let added = false;
+  for (const s of tasks) {
+    if (!s.isRepeatSource || !s.repeat || s.date > T) continue;
+    if (s.repeat !== 'daily' && s.repeat !== dow) continue;
+    if (s.skippedDates.includes(T)) continue;                        // 用户删过当天这条，不再生成
+    if (tasks.some((t) => t.repeatId === s.id && t.date === T)) continue;
+    tasks.push({
+      id: uid(), name: s.name, category: s.category, date: T, time: s.time,
+      priority: s.priority, points: s.points, note: s.note,
+      done: false, doneAt: '', repeatId: s.id,
+    });
+    added = true;
+  }
+  if (added) saveTasks();
+}
+
+function stopRepeat(id) {
+  const s = tasks.find((t) => t.id === id);
+  if (!s) return;
+  if (!window.confirm('停止重复任务「' + s.name + '」吗？已生成的记录会保留，只是以后不再自动生成。')) return;
+  tasks = tasks.filter((t) => t.id !== id);
+  saveTasks();
+  refreshAll();
+  showToast('已停止该重复任务');
+}
+
+/* ---------- 完成 / 撤销 / 删除 ---------- */
+function completeTask(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t || t.done) return;              // 已完成的不重复给积分
+  t.done = true;
+  t.doneAt = nowHM();
+  pointsStore.balance += t.points;
+  pointsStore.ledger.push({ id: uid(), taskId: t.id, type: 'earn', amount: t.points, name: t.name, time: t.date + ' ' + t.doneAt });
+  saveTasks(); savePoints();
+  refreshAll();
+  showToast('完成「' + t.name + '」，积分 +' + t.points + ' ✨');
+}
+
+function undoTask(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t || !t.done) return;
+  t.done = false; t.doneAt = '';
+  pointsStore.balance -= t.points;       // 撤销时同步退回积分，不会变负（本来刚加过）
+  pointsStore.ledger = pointsStore.ledger.filter((e) => e.taskId !== t.id);
+  saveTasks(); savePoints();
+  refreshAll();
+  showToast('已撤销，「' + t.name + '」回到待办');
+}
+
+function delTask(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t) return;
+  if (!window.confirm('确定删除「' + t.name + '」吗？（已完成任务删除后，已得积分保留）')) return;
+  if (t.repeatId) {
+    // 删除的是重复任务生成的当天任务：记下日期，当天不再自动生成
+    const src = tasks.find((x) => x.id === t.repeatId);
+    if (src) { src.skippedDates.push(t.date); }
+  }
+  tasks = tasks.filter((x) => x.id !== id);
+  saveTasks();
+  refreshAll();
+  showToast('已删除');
+}
+
+/* ---------- 首页渲染 ---------- */
+function taskItemHTML(t, isOverdue) {
+  const pri = PRIS[t.priority] || PRIS.mid;
+  const rep = t.repeatId ? '<span class="rep-badge">🔁</span>' : '';
+  const dateLabel = isOverdue ? '<span style="color:var(--bad)">' + t.date.slice(5) + '</span>' : t.time || '随时';
+  const noteLine = t.note ? esc(t.note) : '';
+  if (t.done) {
+    return '<div class="tl-item tl-done">' +
+      '<div class="tl-time">' + esc(t.time || '✓') + '</div>' +
+      '<div class="tl-body" data-note-id="' + t.id + '" title="点击查看/编辑备注"><div class="tl-name">' + tagHTML(t.category) + esc(t.name) + rep + '</div>' +
+      '<div class="tl-meta">实际完成 ' + esc(t.doneAt) + ' · 积分 +' + t.points + '</div></div>' +
+      '<div class="tl-ops"><button class="op op-undo" data-undo="' + t.id + '">↩ 撤销</button>' +
+      '<button class="op op-del" data-del="' + t.id + '" title="删除">✕</button></div></div>';
+  }
+  return '<div class="tl-item">' +
+    '<div class="tl-time">' + dateLabel + '</div>' +
+    '<div class="tl-body" data-note-id="' + t.id + '" title="点击查看/编辑备注"><div class="tl-name">' + tagHTML(t.category) + esc(t.name) + rep + '</div>' +
+    '<div class="tl-meta"><span class="pri ' + pri[1] + '">' + pri[0] + '</span>' + noteLine + '</div></div>' +
+    '<div class="tl-ops"><button class="timer-btn" data-focus="' + t.id + '" title="专注计时（10/20/30/40分钟）">⏱</button>' +
+    '<button class="op op-green" data-done="' + t.id + '">✓ 完成 +' + t.points + '✨</button>' +
+    '<button class="op op-del" data-del="' + t.id + '" title="删除">✕</button></div></div>';
+}
+
+function renderHome() {
+  ensureRepeats();
+  const T = todayStr();
+  const vis = (t) => !t.isRepeatSource;
+  $('todayLabel').textContent = T.slice(5).replace('-', '月') + '日';
+
+  const todays = tasks.filter((t) => vis(t) && t.date === T);
+  const todo = todays.filter((t) => !t.done).sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+  const done = todays.filter((t) => t.done).sort((a, b) => (a.doneAt || '').localeCompare(b.doneAt || ''));
+  const overdue = tasks.filter((t) => vis(t) && t.date < T && !t.done).sort((a, b) => a.date.localeCompare(b.date));
+
+  $('todoList').innerHTML = todo.map((t) => taskItemHTML(t, false)).join('');
+  $('doneHead').hidden = done.length === 0;
+  $('doneList').innerHTML = done.map((t) => taskItemHTML(t, false)).join('');
+  $('homeEmpty').style.display = (todo.length + done.length) ? 'none' : 'block';
+
+  const ob = $('overdueBox');
+  if (overdue.length) {
+    ob.hidden = false;
+    ob.innerHTML = '<div class="overdue-title">⚠ 过期未完成 ' + overdue.length + ' 项（做完一样有积分）</div>' +
+      overdue.map((t) => taskItemHTML(t, true)).join('');
+  } else { ob.hidden = true; ob.innerHTML = ''; }
+
+  const todayEarn = pointsStore.ledger.reduce((s, e) => (e.type === 'earn' && (e.time || '').slice(0, 10) === T ? s + e.amount : s), 0);
+  $('ovTodo').textContent = todo.length;
+  $('ovDone').textContent = done.length;
+  $('ovPoints').textContent = '+' + todayEarn;
+  $('ovOverdue').textContent = overdue.length;
+  $('ovWater').textContent = health.water[T] || 0;
+  $('ovWaterGoal').textContent = health.waterGoal;
+  $('ovFocus').textContent = todayFocusMin();
+
+  renderHistory();
+}
+
+/* ---------- 工作记录（历史回看） ---------- */
+function weekdayOf(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return '星期' + '日一二三四五六'[new Date(y, m - 1, d).getDay()];
+}
+
+function dayEarn(dateStr) {
+  return pointsStore.ledger.reduce((s, e) => (e.type === 'earn' && (e.time || '').slice(0, 10) === dateStr ? s + e.amount : s), 0);
+}
+
+function renderHistory() {
+  const T = todayStr();
+  // 近 7 天小结（含今天），直接数积分明细：一条 earn 就是一项完成
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 6);
+  const wStr = fmtD(weekAgo);
+  let weekDone = 0, weekPts = 0;
+  for (const e of pointsStore.ledger) {
+    if (e.type === 'earn' && (e.time || '').slice(0, 10) >= wStr) { weekDone += 1; weekPts += e.amount; }
+  }
+  $('histSummary').textContent = '近7天：完成 ' + weekDone + ' 项 · +' + weekPts + '✨';
+
+  const dates = [...new Set(tasks.filter((t) => !t.isRepeatSource && t.date < T).map((t) => t.date))].sort((a, b) => b.localeCompare(a));
+  if (!dates.length) {
+    $('historyList').innerHTML = '';
+    $('historyEmpty').hidden = false;
+    return;
+  }
+  $('historyEmpty').hidden = true;
+  const shown = dates.slice(0, 31);
+  $('historyList').innerHTML = shown.map((d) => {
+    const day = tasks.filter((t) => !t.isRepeatSource && t.date === d);
+    const doneN = day.filter((t) => t.done).length;
+    const head = '<div class="day-group">📅 ' + d.slice(5).replace('-', '月') + '日 ' + weekdayOf(d) +
+      ' <span style="color:var(--acc-deep);font-weight:normal;">完成 ' + doneN + '/' + day.length + ' · +' + dayEarn(d) + '✨</span></div>';
+    const rows = day.map((t) => {
+      return '<div class="tl-item' + (t.done ? ' tl-done' : '') + '">' +
+        '<div class="tl-time">' + esc(t.time || '–') + '</div>' +
+        '<div class="tl-body"><div class="tl-name">' + esc(t.name) + '</div>' +
+        '<div class="tl-meta">' + tagHTML(t.category) +
+        (t.done ? '✓ 积分 +' + t.points : '<span style="color:var(--bad)">当天未完成</span>') + '</div></div></div>';
+    }).join('');
+    return head + rows;
+  }).join('') + (dates.length > 31 ? '<p class="empty-tip">仅显示最近 31 天</p>' : '');
+}
+
+$('histLink').addEventListener('click', () => showPage('task'));
+
+// 首页任务按钮（完成/撤销/删除）统一处理
+$('todoList').addEventListener('click', onTaskOps);
+$('doneList').addEventListener('click', onTaskOps);
+$('overdueBox').addEventListener('click', onTaskOps);
+function onTaskOps(e) {
+  const nb = e.target.closest('[data-note-id]');
+  if (nb) { openTaskNote(nb.dataset.noteId); return; }
+  const f = e.target.closest('[data-focus]');
+  if (f) { openFocus(f.dataset.focus); return; }
+  const d = e.target.closest('[data-done]');
+  if (d) { completeTask(d.dataset.done); return; }
+  const u = e.target.closest('[data-undo]');
+  if (u) { undoTask(u.dataset.undo); return; }
+  const x = e.target.closest('[data-del]');
+  if (x) { delTask(x.dataset.del); }
+}
+
+$('afSave').addEventListener('click', saveTaskFromForm);
+$('afCancel').addEventListener('click', closeAddForm);
+
+/* ---------- ⏱ 专注计时（移植自我学习我快乐） ---------- */
+const focusState = { preset: 20, total: 0, left: 0, timer: null, running: false };
+
+function fmtClock(sec) { return Math.floor(sec / 60) + ':' + pad2(sec % 60); }
+
+function todayFocusMin() {
+  return settings.focus && settings.focus.date === todayStr() ? settings.focus.min : 0;
+}
+
+function openFocus(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t || t.done) return;
+  focusState.total = focusState.preset * 60;
+  focusState.left = focusState.total;
+  $('focusTaskName').textContent = '📖 ' + t.name;
+  $('focusDisplay').textContent = fmtClock(focusState.left);
+  $('focusTip').textContent = '选定时长，开始专注，不要走开哦 🌸';
+  $('focusPresets').hidden = false;
+  $('focusStart').hidden = false;
+  $('focusCancel').hidden = false;
+  $('focusHold').hidden = true;
+  $('focusOverlay').hidden = false;
+}
+
+function startFocus() {
+  focusState.total = focusState.preset * 60;
+  focusState.left = focusState.total;
+  focusState.running = true;
+  $('focusPresets').hidden = true;
+  $('focusStart').hidden = true;
+  $('focusCancel').hidden = true;
+  $('focusHold').hidden = false;
+  $('focusTip').textContent = '专注中……不要离开哦！加油！💪';
+  $('focusDisplay').textContent = fmtClock(focusState.left);
+  focusState.timer = setInterval(() => {
+    focusState.left -= 1;
+    $('focusDisplay').textContent = fmtClock(Math.max(0, focusState.left));
+    if (focusState.left <= 0) finishFocus(true);
+  }, 1000);
+}
+
+function finishFocus(completed) {
+  clearInterval(focusState.timer);
+  focusState.running = false;
+  const mins = Math.max(0, Math.round((focusState.total - Math.max(0, focusState.left)) / 60));
+  $('focusOverlay').hidden = true;
+  if (mins > 0) {
+    const T = todayStr();
+    if (!settings.focus || settings.focus.date !== T) settings.focus = { date: T, min: 0 };
+    settings.focus.min += mins;
+    saveSettings();
+  }
+  $('ovFocus').textContent = todayFocusMin();   // 刷新今日概览
+  showToast(completed
+    ? '🎉 太专注啦！本次专注 ' + mins + ' 分钟！'
+    : '本次专注 ' + mins + ' 分钟，下次坚持更久哦！');
+}
+
+$('focusPresets').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-min]');
+  if (!b || focusState.running) return;
+  focusState.preset = parseInt(b.dataset.min, 10);
+  $('focusPresets').querySelectorAll('button').forEach((x) => x.classList.toggle('active', x === b));
+  focusState.left = focusState.preset * 60;
+  $('focusDisplay').textContent = fmtClock(focusState.left);
+});
+$('focusStart').addEventListener('click', startFocus);
+$('focusCancel').addEventListener('click', () => { $('focusOverlay').hidden = true; });
+
+/* 长按3秒才能退出，防止半途而废 */
+$('focusHoldBtn').addEventListener('pointerdown', () => {
+  if (!focusState.running) return;
+  const btn = $('focusHoldBtn');
+  let held = 0;
+  const holdIv = setInterval(() => {
+    held += 0.25;
+    const left = Math.max(0, 3 - held);
+    btn.textContent = '坚持住！松手就不退了（还差 ' + (Number.isInteger(left) ? left : left.toFixed(1)) + ' 秒）';
+    if (held >= 3) { clearInterval(holdIv); btn.textContent = '🙈 长按3秒才能退出'; finishFocus(false); }
+  }, 250);
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => btn.addEventListener(ev, () => {
+    clearInterval(holdIv);
+    btn.textContent = '🙈 长按3秒才能退出';
+  }, { once: true }));
+});
+
+/* ---------- ✎ 任务备注（点任务行随时查看/编辑） ---------- */
+let noteTaskId = null;
+function openTaskNote(id) {
+  const t = tasks.find((x) => x.id === id);
+  if (!t) return;
+  noteTaskId = id;
+  $('taskNoteName').textContent = '📌 ' + t.name;
+  $('taskNoteText').value = t.note || '';
+  $('taskNoteOverlay').hidden = false;
+  setTimeout(() => $('taskNoteText').focus(), 100);
+}
+$('taskNoteSave').addEventListener('click', () => {
+  const t = tasks.find((x) => x.id === noteTaskId);
+  if (t) {
+    t.note = $('taskNoteText').value.trim();
+    saveTasks();
+    refreshAll();
+    showToast('备注已保存');
+  }
+  $('taskNoteOverlay').hidden = true;
+});
+$('taskNoteClose').addEventListener('click', () => { $('taskNoteOverlay').hidden = true; });
+
+/* ---------- 备份：导出 / 恢复 ---------- */
+function updateLastBackupLine() {
+  const d = settings.lastBackup;
+  $('lastBackupLine').textContent = d ? ('上次备份：' + d) : '上次备份：从未（建议每周备份一次）';
+}
+
+function exportBackup() {
+  const data = {
+    app: 'huajian', version: 6, exportedAt: todayStr(),
+    settings: settings, tasks: tasks, points: pointsStore,
+    templates: templates, notes: notes, reading: reading, health: health, finance: finance, forest: forest,
+  };
+  try {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '花间时光备份_' + todayStr() + '.json';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+    settings.lastBackup = todayStr();
+    saveSettings();
+    updateLastBackupLine();
+    showToast('备份文件已生成，请保存到微信收藏或网盘 💾');
+  } catch (e) {
+    showToast('导出失败：' + e.message);
+  }
+}
+
+function applyBackup(obj) {
+  if (!obj || obj.app !== 'huajian') { showToast('这个文件不是花间时光的备份哦'); return; }
+  if (!window.confirm('恢复备份会覆盖当前的全部数据（含任务、积分、模板、速记），确定继续吗？')) return;
+  settings = Object.assign({ theme: 'sakura', lastPage: 'home', focus: { date: '', min: 0 } }, obj.settings || {});
+  const K = OLD_CAT_KEYS;
+  tasks = (Array.isArray(obj.tasks) ? obj.tasks : []).map((t) => ({
+    ...t, category: K[t.category] || t.category || '工作',
+    skippedDates: Array.isArray(t.skippedDates) ? t.skippedDates : [],
+  }));
+  pointsStore = (obj.points && typeof obj.points.balance === 'number')
+    ? { balance: obj.points.balance, ledger: Array.isArray(obj.points.ledger) ? obj.points.ledger : [] }
+    : { balance: 0, ledger: [] };
+  templates = Array.isArray(obj.templates) ? obj.templates : [];
+  notes = Array.isArray(obj.notes) ? obj.notes : [];
+  if (obj.reading) {
+    reading = {
+      fav: Array.isArray(obj.reading.fav) ? obj.reading.fav : [],
+      userQuotes: Array.isArray(obj.reading.userQuotes) ? obj.reading.userQuotes : [],
+      books: Array.isArray(obj.reading.books) ? obj.reading.books : [],
+      materials: Array.isArray(obj.reading.materials) ? obj.reading.materials : [],
+    };
+  }
+  if (obj.health) {
+    const defH = loadHealth();
+    health = {
+      waterGoal: Number(obj.health.waterGoal) || 8,
+      water: obj.health.water || {}, sleep: obj.health.sleep || {},
+      habits: Array.isArray(obj.health.habits) && obj.health.habits.length ? obj.health.habits : defH.habits,
+      habitLog: obj.health.habitLog || {},
+    };
+  }
+  if (obj.finance) {
+    finance = {
+      records: Array.isArray(obj.finance.records) ? obj.finance.records : [],
+      budget: Number(obj.finance.budget) || 0,
+    };
+  }
+  if (obj.forest) {
+    const defF = loadForest();
+    forest = {
+      trees: Array.isArray(obj.forest.trees) ? obj.forest.trees : [],
+      rewards: Array.isArray(obj.forest.rewards) && obj.forest.rewards.length ? obj.forest.rewards : defF.rewards,
+    };
+  }
+  saveSettings(); saveTasks(); savePoints(); saveTemplates(); saveNotes(); saveReading(); saveHealth(); saveFinance(); saveForest();
+  applyTheme(settings.theme);
+  updateLastBackupLine();
+  refreshAll();
+  renderReadAll();
+  renderFinance();
+  showToast('恢复完成！共 ' + tasks.length + ' 项任务 🌷');
+}
+
+$('exportBtn').addEventListener('click', exportBackup);
+$('importBtn').addEventListener('click', () => $('importFile').click());
+$('importFile').addEventListener('change', (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try { applyBackup(JSON.parse(reader.result)); }
+    catch (err) { showToast('文件读取失败，请确认是导出的备份文件'); }
+  };
+  reader.readAsText(f, 'utf-8');
+  e.target.value = '';
+});
+
+/* =========================================================
+   阶段 2：任务页（视图切换 / 类别筛选）+ 工作速记 + 模板
+   ========================================================= */
+let taskView = 'today';      // today / tomorrow / future
+let catFilter = 'all';
+
+function tomorrowStr() { const d = new Date(); d.setDate(d.getDate() + 1); return fmtD(d); }
+function addDaysStr(n) { const d = new Date(); d.setDate(d.getDate() + n); return fmtD(d); }
+
+function allCategories() {
+  const set = new Set(tasks.filter((t) => !t.isRepeatSource).map((t) => t.category));
+  templates.forEach((p) => set.add(p.category));
+  const known = ['工作', '生活', '阅读', '健康'];
+  return [...known.filter((c) => set.has(c)), ...[...set].filter((c) => !known.includes(c))];
+}
+
+function updateCatDatalist() {
+  const opts = ['工作', '生活', '阅读', '健康', ...allCategories().filter((c) => !['工作', '生活', '阅读', '健康'].includes(c))];
+  $('catList').innerHTML = [...new Set(opts)].map((c) => '<option>' + esc(c) + '</option>').join('');
+}
+
+function refreshAll() {
+  ensureRepeats();
+  renderHome();
+  renderTaskPage();
+  renderQnotes();
+  renderHealth();
+  renderPoints();
+  renderRewards();
+  renderForest();
+  renderFinance();
+  updateCatDatalist();
+}
+
+/* ---------- 工作速记 ---------- */
+function addQnote() {
+  const v = $('qnoteInput').value.trim();
+  if (!v) { showToast('先写一句要记的事～'); return; }
+  notes.unshift({ id: uid(), text: v, date: todayStr(), time: nowHM() });
+  notes = notes.slice(0, 200);
+  saveNotes();
+  $('qnoteInput').value = '';
+  renderQnotes();
+  showToast('已记下 ✍');
+}
+
+function renderQnotes() {
+  const list = notes.slice(0, 8);
+  if (!list.length) { $('qnoteList').innerHTML = ''; return; }
+  const T = todayStr();
+  $('qnoteList').innerHTML = list.map((n) => {
+    const when = n.date === T ? n.time : n.date.slice(5).replace('-', '月') + '日';
+    return '<div class="note-item"><span class="nd">' + esc(when) + '</span>' +
+      '<span class="nt">' + esc(n.text) + '</span>' +
+      '<button data-n2t="' + n.id + '" title="转成任务">↗ 转任务</button>' +
+      '<button data-ndel="' + n.id + '" title="删除" style="background:none;color:var(--ink2);">✕</button></div>';
+  }).join('');
+}
+
+/* ---------- 常用模板 ---------- */
+function renderTemplates() {
+  $('tplEmpty').style.display = templates.length ? 'none' : 'block';
+  $('tplList').innerHTML = templates.map((p) =>
+    '<div class="tl-item">' +
+    tagHTML(p.category) +
+    '<div class="tl-body"><div class="tl-name">' + esc(p.name) + '</div>' +
+    '<div class="tl-meta">+' + p.points + '✨ · ' + esc(p.time || '不设时间') + '</div></div>' +
+    '<div class="tl-ops"><button class="op op-done" data-tadd="' + p.id + '">➕ 加到今天</button>' +
+    '<button class="op op-del" data-tdel="' + p.id + '" title="删除模板">✕</button></div></div>'
+  ).join('');
+}
+
+function saveTodayAsTemplate() {
+  const T = todayStr();
+  const todays = tasks.filter((t) => !t.isRepeatSource && t.date === T);
+  if (!todays.length) { showToast('今天还没有任务，先添加任务吧～'); return; }
+  let added = 0;
+  for (const t of todays) {
+    if (templates.some((p) => p.name === t.name && p.category === t.category)) continue;
+    templates.push({ id: uid(), name: t.name, category: t.category, points: t.points, time: t.time, priority: t.priority, note: t.note || '' });
+    added++;
+  }
+  saveTemplates();
+  renderTemplates();
+  updateCatDatalist();
+  showToast(added ? '存好啦，' + added + ' 项成为模板 💾' : '这些任务都已经在模板里啦');
+}
+
+function addTemplateTo(id) {
+  const p = templates.find((x) => x.id === id);
+  if (!p) return;
+  const T = todayStr();
+  if (tasks.some((t) => !t.isRepeatSource && t.date === T && t.name === p.name)) {
+    showToast('今天已经有「' + p.name + '」啦');
+    return;
+  }
+  tasks.push({ id: uid(), name: p.name, category: p.category, date: T, time: p.time || '', priority: p.priority || 'mid', points: p.points, note: p.note || '', done: false, doneAt: '' });
+  saveTasks();
+  refreshAll();
+  showToast('已加到今天：' + p.name);
+}
+
+function addAllTemplates() {
+  if (!templates.length) { showToast('还没有模板哦～'); return; }
+  const T = todayStr();
+  let added = 0;
+  for (const p of templates) {
+    if (tasks.some((t) => !t.isRepeatSource && t.date === T && t.name === p.name)) continue;
+    tasks.push({ id: uid(), name: p.name, category: p.category, date: T, time: p.time || '', priority: p.priority || 'mid', points: p.points, note: p.note || '', done: false, doneAt: '' });
+    added++;
+  }
+  if (!added) { showToast('模板里的任务今天都有啦～'); return; }
+  saveTasks();
+  refreshAll();
+  showToast('一键添加 ' + added + ' 项任务成功！');
+}
+
+function delTemplate(id) {
+  templates = templates.filter((p) => p.id !== id);
+  saveTemplates();
+  renderTemplates();
+  showToast('模板已删除');
+}
+
+/* ---------- 任务页渲染 ---------- */
+function renderCatChips() {
+  const cats = allCategories();
+  const chips = [{ key: 'all', label: '全部' }].concat(cats.map((c) => ({ key: c, label: c })));
+  $('catChips').innerHTML = chips.map((c) =>
+    '<button class="vchip' + (catFilter === c.key ? ' on' : '') + '" data-cat="' + esc(c.key) + '" type="button">' + c.label + '</button>'
+  ).join('');
+}
+
+function renderRepeatCard() {
+  const sources = tasks.filter((t) => t.isRepeatSource);
+  $('repeatCard').hidden = sources.length === 0;
+  $('repeatList').innerHTML = sources.map((s) =>
+    '<div class="tl-item">' +
+    '<div class="tl-body"><div class="tl-name">' + esc(s.name) + ' <span class="rep-badge">🔁 ' + repeatLabel(s.repeat) + '</span></div>' +
+    '<div class="tl-meta">' + tagHTML(s.category) + (s.time || '不设时间') + ' · +' + s.points + '✨</div></div>' +
+    '<div class="tl-ops"><button class="op op-undo" data-stoprep="' + s.id + '">停止</button></div></div>'
+  ).join('');
+}
+
+function renderTaskPage() {
+  const T = todayStr(), TM = tomorrowStr();
+  const vis = (t) => !t.isRepeatSource && (catFilter === 'all' || t.category === catFilter);
+  $('taskViewLabel').textContent = taskView === 'today' ? (T.slice(5).replace('-', '月') + '日')
+    : (taskView === 'tomorrow' ? (TM.slice(5).replace('-', '月') + '日') : '未来7天');
+  document.querySelectorAll('#viewChips .vchip').forEach((b) => b.classList.toggle('on', b.dataset.view === taskView));
+  renderCatChips();
+  renderTemplates();
+  renderRepeatCard();
+
+  let body = '';
+  if (taskView === 'today') {
+    const overdue = tasks.filter((t) => vis(t) && t.date < T && !t.done).sort((a, b) => a.date.localeCompare(b.date));
+    const ob = $('taskOverdueBox');
+    if (overdue.length) {
+      ob.hidden = false;
+      ob.innerHTML = '<div class="overdue-title">⚠ 过期未完成 ' + overdue.length + ' 项（做完一样有积分）</div>' + overdue.map((t) => taskItemHTML(t, true)).join('');
+    } else { ob.hidden = true; ob.innerHTML = ''; }
+    const todays = tasks.filter((t) => vis(t) && t.date === T);
+    const todo = todays.filter((t) => !t.done).sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+    const done = todays.filter((t) => t.done).sort((a, b) => (a.doneAt || '').localeCompare(b.doneAt || ''));
+    body = todo.map((t) => taskItemHTML(t, false)).join('')
+      + (done.length ? '<div class="day-group">✅ 已完成</div>' + done.map((t) => taskItemHTML(t, false)).join('') : '');
+    $('taskEmpty').textContent = catFilter === 'all' ? '今天还没有任务' : '今天没有「' + catFilter + '」类任务';
+  } else if (taskView === 'tomorrow') {
+    $('taskOverdueBox').hidden = true;
+    const list = tasks.filter((t) => vis(t) && t.date === TM).sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+    body = list.map((t) => taskItemHTML(t, false)).join('');
+    $('taskEmpty').textContent = '明天还没有安排，可以提前添加';
+  } else {
+    $('taskOverdueBox').hidden = true;
+    const T7 = addDaysStr(7);
+    const dates = [...new Set(tasks.filter((t) => vis(t) && t.date > T && t.date <= T7).map((t) => t.date))].sort();
+    body = dates.map((d) => {
+      const list = tasks.filter((t) => vis(t) && t.date === d).sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+      return '<div class="day-group">📅 ' + d.slice(5).replace('-', '月') + '日 ' + weekdayOf(d) + '</div>' + list.map((t) => taskItemHTML(t, false)).join('');
+    }).join('');
+    $('taskEmpty').textContent = '未来 7 天还没有安排';
+  }
+  $('taskListBody').innerHTML = body;
+  $('taskEmpty').hidden = body !== '';
+}
+
+/* ---------- 阶段2事件 ---------- */
+$('qnoteSave').addEventListener('click', addQnote);
+$('qnoteInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') addQnote(); });
+$('qnoteList').addEventListener('click', (e) => {
+  const n2t = e.target.closest('[data-n2t]');
+  if (n2t) {
+    const n = notes.find((x) => x.id === n2t.dataset.n2t);
+    if (n) { $('afName').value = n.text; openAddForm(); showToast('已带进添加表单，补充后保存即可'); }
+    return;
+  }
+  const nd = e.target.closest('[data-ndel]');
+  if (nd) {
+    notes = notes.filter((x) => x.id !== nd.dataset.ndel);
+    saveNotes(); renderQnotes();
+  }
+});
+
+$('viewChips').addEventListener('click', (e) => {
+  const b = e.target.closest('.vchip');
+  if (!b) return;
+  taskView = b.dataset.view;
+  renderTaskPage();
+});
+$('catChips').addEventListener('click', (e) => {
+  const b = e.target.closest('.vchip');
+  if (!b) return;
+  catFilter = (catFilter === b.dataset.cat) ? 'all' : b.dataset.cat;
+  renderTaskPage();
+});
+$('taskAddBtn').addEventListener('click', () => {
+  openAddForm(taskView === 'today' ? todayStr() : addDaysStr(1));
+});
+$('taskListBody').addEventListener('click', onTaskOps);
+$('taskOverdueBox').addEventListener('click', onTaskOps);
+
+$('tplSaveToday').addEventListener('click', saveTodayAsTemplate);
+$('tplAddAll').addEventListener('click', addAllTemplates);
+$('tplList').addEventListener('click', (e) => {
+  const addBtn = e.target.closest('[data-tadd]');
+  if (addBtn) { addTemplateTo(addBtn.dataset.tadd); return; }
+  const delBtn = e.target.closest('[data-tdel]');
+  if (delBtn) delTemplate(delBtn.dataset.tdel);
+});
+$('repeatList').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-stoprep]');
+  if (b) stopRepeat(b.dataset.stoprep);
+});
+
+/* =========================================================
+   阶段 3：阅读 · 文学板块
+   QUOTES：内置名句库（首批，出处经核对；后续批次继续补足 1000+）
+   格式：[名句, 作者, 篇名, 朝代, 主题]
+   ========================================================= */
+const QUOTES = [
+  // ---- 先秦 · 两汉 · 魏晋 ----
+  ['关关雎鸠，在河之洲。窈窕淑女，君子好逑。', '《诗经》', '周南·关雎', '先秦', '爱情'],
+  ['昔我往矣，杨柳依依；今我来思，雨雪霏霏。', '《诗经》', '小雅·采薇', '先秦', '思乡'],
+  ['它山之石，可以攻玉。', '《诗经》', '小雅·鹤鸣', '先秦', '哲理'],
+  ['靡不有初，鲜克有终。', '《诗经》', '大雅·荡', '先秦', '哲理'],
+  ['路漫漫其修远兮，吾将上下而求索。', '屈原', '离骚', '先秦', '励志'],
+  ['亦余心之所善兮，虽九死其犹未悔。', '屈原', '离骚', '先秦', '励志'],
+  ['长太息以掩涕兮，哀民生之多艰。', '屈原', '离骚', '先秦', '爱国'],
+  ['老骥伏枥，志在千里；烈士暮年，壮心不已。', '曹操', '龟虽寿', '汉', '励志'],
+  ['对酒当歌，人生几何！', '曹操', '短歌行', '汉', '抒怀'],
+  ['山不厌高，海不厌深；周公吐哺，天下归心。', '曹操', '短歌行', '汉', '励志'],
+  ['采菊东篱下，悠然见南山。', '陶渊明', '饮酒·其五', '晋', '田园'],
+  ['盛年不重来，一日难再晨。', '陶渊明', '杂诗', '晋', '时间'],
+  ['及时当勉励，岁月不待人。', '陶渊明', '杂诗', '晋', '时间'],
+  ['羁鸟恋旧林，池鱼思故渊。', '陶渊明', '归园田居', '晋', '田园'],
+  ['木欣欣以向荣，泉涓涓而始流。', '陶渊明', '归去来兮辞', '晋', '写景'],
+  // ---- 唐 ----
+  ['海内存知己，天涯若比邻。', '王勃', '送杜少府之任蜀州', '唐', '友情'],
+  ['落霞与孤鹜齐飞，秋水共长天一色。', '王勃', '滕王阁序', '唐', '秋'],
+  ['鹅，鹅，鹅，曲项向天歌。', '骆宾王', '咏鹅', '唐', '写景'],
+  ['前不见古人，后不见来者。', '陈子昂', '登幽州台歌', '唐', '抒怀'],
+  ['碧玉妆成一树高，万条垂下绿丝绦。', '贺知章', '咏柳', '唐', '春'],
+  ['少小离家老大回，乡音无改鬓毛衰。', '贺知章', '回乡偶书', '唐', '思乡'],
+  ['春江潮水连海平，海上明月共潮生。', '张若虚', '春江花月夜', '唐', '月夜'],
+  ['江畔何人初见月？江月何年初照人？', '张若虚', '春江花月夜', '唐', '哲理'],
+  ['白日依山尽，黄河入海流。', '王之涣', '登鹳雀楼', '唐', '山水'],
+  ['欲穷千里目，更上一层楼。', '王之涣', '登鹳雀楼', '唐', '励志'],
+  ['黄河远上白云间，一片孤城万仞山。', '王之涣', '凉州词', '唐', '边塞'],
+  ['海上生明月，天涯共此时。', '张九龄', '望月怀远', '唐', '月夜'],
+  ['草木有本心，何求美人折。', '张九龄', '感遇', '唐', '哲理'],
+  ['春眠不觉晓，处处闻啼鸟。', '孟浩然', '春晓', '唐', '春'],
+  ['绿树村边合，青山郭外斜。', '孟浩然', '过故人庄', '唐', '田园'],
+  ['野旷天低树，江清月近人。', '孟浩然', '宿建德江', '唐', '月夜'],
+  ['气蒸云梦泽，波撼岳阳城。', '孟浩然', '望洞庭湖赠张丞相', '唐', '山水'],
+  ['秦时明月汉时关，万里长征人未还。', '王昌龄', '出塞', '唐', '边塞'],
+  ['黄沙百战穿金甲，不破楼兰终不还。', '王昌龄', '从军行', '唐', '边塞'],
+  ['青海长云暗雪山，孤城遥望玉门关。', '王昌龄', '从军行', '唐', '边塞'],
+  ['洛阳亲友如相问，一片冰心在玉壶。', '王昌龄', '芙蓉楼送辛渐', '唐', '友情'],
+  ['空山新雨后，天气晚来秋。', '王维', '山居秋暝', '唐', '秋'],
+  ['明月松间照，清泉石上流。', '王维', '山居秋暝', '唐', '山水'],
+  ['大漠孤烟直，长河落日圆。', '王维', '使至塞上', '唐', '边塞'],
+  ['独在异乡为异客，每逢佳节倍思亲。', '王维', '九月九日忆山东兄弟', '唐', '思乡'],
+  ['遥知兄弟登高处，遍插茱萸少一人。', '王维', '九月九日忆山东兄弟', '唐', '思乡'],
+  ['劝君更尽一杯酒，西出阳关无故人。', '王维', '送元二使安西', '唐', '送别'],
+  ['红豆生南国，春来发几枝。', '王维', '相思', '唐', '爱情'],
+  ['深林人不知，明月来相照。', '王维', '竹里馆', '唐', '月夜'],
+  ['江流天地外，山色有无中。', '王维', '汉江临泛', '唐', '山水'],
+  ['行到水穷处，坐看云起时。', '王维', '终南别业', '唐', '哲理'],
+  ['床前明月光，疑是地上霜。', '李白', '静夜思', '唐', '月夜'],
+  ['飞流直下三千尺，疑是银河落九天。', '李白', '望庐山瀑布', '唐', '山水'],
+  ['桃花潭水深千尺，不及汪伦送我情。', '李白', '赠汪伦', '唐', '友情'],
+  ['孤帆远影碧空尽，唯见长江天际流。', '李白', '黄鹤楼送孟浩然之广陵', '唐', '送别'],
+  ['朝辞白帝彩云间，千里江陵一日还。', '李白', '早发白帝城', '唐', '写景'],
+  ['两岸猿声啼不住，轻舟已过万重山。', '李白', '早发白帝城', '唐', '抒怀'],
+  ['天门中断楚江开，碧水东流至此回。', '李白', '望天门山', '唐', '山水'],
+  ['抽刀断水水更流，举杯消愁愁更愁。', '李白', '宣州谢朓楼饯别校书叔云', '唐', '抒怀'],
+  ['俱怀逸兴壮思飞，欲上青天揽明月。', '李白', '宣州谢朓楼饯别校书叔云', '唐', '励志'],
+  ['长风破浪会有时，直挂云帆济沧海。', '李白', '行路难', '唐', '励志'],
+  ['天生我材必有用，千金散尽还复来。', '李白', '将进酒', '唐', '励志'],
+  ['君不见黄河之水天上来，奔流到海不复回。', '李白', '将进酒', '唐', '时间'],
+  ['举杯邀明月，对影成三人。', '李白', '月下独酌', '唐', '月夜'],
+  ['安能摧眉折腰事权贵，使我不得开心颜。', '李白', '梦游天姥吟留别', '唐', '励志'],
+  ['蜀道之难，难于上青天。', '李白', '蜀道难', '唐', '抒怀'],
+  ['我寄愁心与明月，随风直到夜郎西。', '李白', '闻王昌龄左迁龙标遥有此寄', '唐', '友情'],
+  ['浮云游子意，落日故人情。', '李白', '送友人', '唐', '送别'],
+  ['今人不见古时月，今月曾经照古人。', '李白', '把酒问月', '唐', '哲理'],
+  ['明月出天山，苍茫云海间。', '李白', '关山月', '唐', '月夜'],
+  ['请君试问东流水，别意与之谁短长。', '李白', '金陵酒肆留别', '唐', '送别'],
+  ['兰陵美酒郁金香，玉碗盛来琥珀光。', '李白', '客中行', '唐', '抒怀'],
+  ['会当凌绝顶，一览众山小。', '杜甫', '望岳', '唐', '励志'],
+  ['岱宗夫如何？齐鲁青未了。', '杜甫', '望岳', '唐', '山水'],
+  ['感时花溅泪，恨别鸟惊心。', '杜甫', '春望', '唐', '爱国'],
+  ['国破山河在，城春草木深。', '杜甫', '春望', '唐', '爱国'],
+  ['烽火连三月，家书抵万金。', '杜甫', '春望', '唐', '思乡'],
+  ['好雨知时节，当春乃发生。', '杜甫', '春夜喜雨', '唐', '春'],
+  ['随风潜入夜，润物细无声。', '杜甫', '春夜喜雨', '唐', '春'],
+  ['两个黄鹂鸣翠柳，一行白鹭上青天。', '杜甫', '绝句', '唐', '春'],
+  ['窗含西岭千秋雪，门泊东吴万里船。', '杜甫', '绝句', '唐', '写景'],
+  ['迟日江山丽，春风花草香。', '杜甫', '绝句二首', '唐', '春'],
+  ['泥融飞燕子，沙暖睡鸳鸯。', '杜甫', '绝句二首', '唐', '春'],
+  ['无边落木萧萧下，不尽长江滚滚来。', '杜甫', '登高', '唐', '秋'],
+  ['万里悲秋常作客，百年多病独登台。', '杜甫', '登高', '唐', '秋'],
+  ['安得广厦千万间，大庇天下寒士俱欢颜。', '杜甫', '茅屋为秋风所破歌', '唐', '爱国'],
+  ['读书破万卷，下笔如有神。', '杜甫', '奉赠韦左丞丈二十二韵', '唐', '读书'],
+  ['为人性僻耽佳句，语不惊人死不休。', '杜甫', '江上值水如海势聊短述', '唐', '读书'],
+  ['文章千古事，得失寸心知。', '杜甫', '偶题', '唐', '读书'],
+  ['笔落惊风雨，诗成泣鬼神。', '杜甫', '寄李十二白二十韵', '唐', '读书'],
+  ['露从今夜白，月是故乡明。', '杜甫', '月夜忆舍弟', '唐', '思乡'],
+  ['星垂平野阔，月涌大江流。', '杜甫', '旅夜书怀', '唐', '月夜'],
+  ['正是江南好风景，落花时节又逢君。', '杜甫', '江南逢李龟年', '唐', '友情'],
+  ['白日放歌须纵酒，青春作伴好还乡。', '杜甫', '闻官军收河南河北', '唐', '抒怀'],
+  ['尔曹身与名俱灭，不废江河万古流。', '杜甫', '戏为六绝句', '唐', '哲理'],
+  ['忽如一夜春风来，千树万树梨花开。', '岑参', '白雪歌送武判官归京', '唐', '冬'],
+  ['山回路转不见君，雪上空留马行处。', '岑参', '白雪歌送武判官归京', '唐', '送别'],
+  ['瀚海阑干百丈冰，愁云惨淡万里凝。', '岑参', '白雪歌送武判官归京', '唐', '冬'],
+  ['莫愁前路无知己，天下谁人不识君。', '高适', '别董大', '唐', '送别'],
+  ['千里黄云白日曛，北风吹雁雪纷纷。', '高适', '别董大', '唐', '冬'],
+  ['日暮乡关何处是？烟波江上使人愁。', '崔颢', '黄鹤楼', '唐', '思乡'],
+  ['黄鹤一去不复返，白云千载空悠悠。', '崔颢', '黄鹤楼', '唐', '哲理'],
+  ['月落乌啼霜满天，江枫渔火对愁眠。', '张继', '枫桥夜泊', '唐', '秋'],
+  ['姑苏城外寒山寺，夜半钟声到客船。', '张继', '枫桥夜泊', '唐', '月夜'],
+  ['春潮带雨晚来急，野渡无人舟自横。', '韦应物', '滁州西涧', '唐', '春'],
+  ['谁言寸草心，报得三春晖。', '孟郊', '游子吟', '唐', '亲情'],
+  ['春风得意马蹄疾，一日看尽长安花。', '孟郊', '登科后', '唐', '抒怀'],
+  ['两句三年得，一吟双泪流。', '贾岛', '题诗后', '唐', '读书'],
+  ['松下问童子，言师采药去。', '贾岛', '寻隐者不遇', '唐', '写景'],
+  ['柴门闻犬吠，风雪夜归人。', '刘长卿', '逢雪宿芙蓉山主人', '唐', '冬'],
+  ['天街小雨润如酥，草色遥看近却无。', '韩愈', '早春呈水部张十八员外', '唐', '春'],
+  ['最是一年春好处，绝胜烟柳满皇都。', '韩愈', '早春呈水部张十八员外', '唐', '春'],
+  ['云横秦岭家何在？雪拥蓝关马不前。', '韩愈', '左迁至蓝关示侄孙湘', '唐', '抒怀'],
+  ['业精于勤，荒于嬉；行成于思，毁于随。', '韩愈', '进学解', '唐', '读书'],
+  ['千山鸟飞绝，万径人踪灭。', '柳宗元', '江雪', '唐', '冬'],
+  ['孤舟蓑笠翁，独钓寒江雪。', '柳宗元', '江雪', '唐', '冬'],
+  ['沉舟侧畔千帆过，病树前头万木春。', '刘禹锡', '酬乐天扬州初逢席上见赠', '唐', '哲理'],
+  ['旧时王谢堂前燕，飞入寻常百姓家。', '刘禹锡', '乌衣巷', '唐', '哲理'],
+  ['东边日出西边雨，道是无晴却有晴。', '刘禹锡', '竹枝词', '唐', '爱情'],
+  ['自古逢秋悲寂寥，我言秋日胜春朝。', '刘禹锡', '秋词', '唐', '秋'],
+  ['晴空一鹤排云上，便引诗情到碧霄。', '刘禹锡', '秋词', '唐', '秋'],
+  ['山不在高，有仙则名。', '刘禹锡', '陋室铭', '唐', '哲理'],
+  ['斯是陋室，惟吾德馨。', '刘禹锡', '陋室铭', '唐', '哲理'],
+  ['千淘万漉虽辛苦，吹尽狂沙始到金。', '刘禹锡', '浪淘沙', '唐', '励志'],
+  ['湖光秋月两相和，潭面无风镜未磨。', '刘禹锡', '望洞庭', '唐', '秋'],
+  ['长恨人心不如水，等闲平地起波澜。', '刘禹锡', '竹枝词', '唐', '哲理'],
+  ['野火烧不尽，春风吹又生。', '白居易', '赋得古原草送别', '唐', '哲理'],
+  ['离离原上草，一岁一枯荣。', '白居易', '赋得古原草送别', '唐', '哲理'],
+  ['一道残阳铺水中，半江瑟瑟半江红。', '白居易', '暮江吟', '唐', '写景'],
+  ['可怜九月初三夜，露似真珠月似弓。', '白居易', '暮江吟', '唐', '秋'],
+  ['日出江花红胜火，春来江水绿如蓝。', '白居易', '忆江南', '唐', '春'],
+  ['乱花渐欲迷人眼，浅草才能没马蹄。', '白居易', '钱塘湖春行', '唐', '春'],
+  ['几处早莺争暖树，谁家新燕啄春泥。', '白居易', '钱塘湖春行', '唐', '春'],
+  ['最爱湖东行不足，绿杨阴里白沙堤。', '白居易', '钱塘湖春行', '唐', '春'],
+  ['同是天涯沦落人，相逢何必曾相识。', '白居易', '琵琶行', '唐', '友情'],
+  ['此时无声胜有声。', '白居易', '琵琶行', '唐', '哲理'],
+  ['在天愿作比翼鸟，在地愿为连理枝。', '白居易', '长恨歌', '唐', '爱情'],
+  ['天长地久有时尽，此恨绵绵无绝期。', '白居易', '长恨歌', '唐', '爱情'],
+  ['可怜身上衣正单，心忧炭贱愿天寒。', '白居易', '卖炭翁', '唐', '爱国'],
+  ['绿蚁新醅酒，红泥小火炉。', '白居易', '问刘十九', '唐', '冬'],
+  ['晚来天欲雪，能饮一杯无。', '白居易', '问刘十九', '唐', '友情'],
+  ['锄禾日当午，汗滴禾下土。', '李绅', '悯农', '唐', '田园'],
+  ['谁知盘中餐，粒粒皆辛苦。', '李绅', '悯农', '唐', '田园'],
+  ['春种一粒粟，秋收万颗子。', '李绅', '悯农·其一', '唐', '田园'],
+  ['清明时节雨纷纷，路上行人欲断魂。', '杜牧', '清明', '唐', '节日'],
+  ['借问酒家何处有？牧童遥指杏花村。', '杜牧', '清明', '唐', '节日'],
+  ['停车坐爱枫林晚，霜叶红于二月花。', '杜牧', '山行', '唐', '秋'],
+  ['远上寒山石径斜，白云生处有人家。', '杜牧', '山行', '唐', '秋'],
+  ['南朝四百八十寺，多少楼台烟雨中。', '杜牧', '江南春', '唐', '春'],
+  ['千里莺啼绿映红，水村山郭酒旗风。', '杜牧', '江南春', '唐', '春'],
+  ['商女不知亡国恨，隔江犹唱后庭花。', '杜牧', '泊秦淮', '唐', '爱国'],
+  ['烟笼寒水月笼沙，夜泊秦淮近酒家。', '杜牧', '泊秦淮', '唐', '月夜'],
+  ['东风不与周郎便，铜雀春深锁二乔。', '杜牧', '赤壁', '唐', '哲理'],
+  ['蜡烛有心还惜别，替人垂泪到天明。', '杜牧', '赠别', '唐', '送别'],
+  ['天阶夜色凉如水，卧看牵牛织女星。', '杜牧', '秋夕', '唐', '秋'],
+  ['春蚕到死丝方尽，蜡炬成灰泪始干。', '李商隐', '无题', '唐', '爱情'],
+  ['身无彩凤双飞翼，心有灵犀一点通。', '李商隐', '无题', '唐', '爱情'],
+  ['相见时难别亦难，东风无力百花残。', '李商隐', '无题', '唐', '爱情'],
+  ['何当共剪西窗烛，却话巴山夜雨时。', '李商隐', '夜雨寄北', '唐', '思乡'],
+  ['君问归期未有期，巴山夜雨涨秋池。', '李商隐', '夜雨寄北', '唐', '思乡'],
+  ['夕阳无限好，只是近黄昏。', '李商隐', '乐游原', '唐', '时间'],
+  ['沧海月明珠有泪，蓝田日暖玉生烟。', '李商隐', '锦瑟', '唐', '抒怀'],
+  ['此情可待成追忆，只是当时已惘然。', '李商隐', '锦瑟', '唐', '抒怀'],
+  ['嫦娥应悔偷灵药，碧海青天夜夜心。', '李商隐', '嫦娥', '唐', '月夜'],
+  ['留得枯荷听雨声。', '李商隐', '宿骆氏亭寄怀崔雍崔衮', '唐', '秋'],
+  ['历览前贤国与家，成由勤俭破由奢。', '李商隐', '咏史', '唐', '哲理'],
+  ['鸡声茅店月，人迹板桥霜。', '温庭筠', '商山早行', '唐', '写景'],
+  ['葡萄美酒夜光杯，欲饮琵琶马上催。', '王翰', '凉州词', '唐', '边塞'],
+  ['醉卧沙场君莫笑，古来征战几人回。', '王翰', '凉州词', '唐', '边塞'],
+  ['月黑雁飞高，单于夜遁逃。', '卢纶', '塞下曲', '唐', '边塞'],
+  ['欲将轻骑逐，大雪满弓刀。', '卢纶', '塞下曲', '唐', '边塞'],
+  ['曾经沧海难为水，除却巫山不是云。', '元稹', '离思', '唐', '爱情'],
+  ['采得百花成蜜后，为谁辛苦为谁甜。', '罗隐', '蜂', '唐', '哲理'],
+  ['人面不知何处去，桃花依旧笑春风。', '崔护', '题都城南庄', '唐', '爱情'],
+  ['西塞山前白鹭飞，桃花流水鳜鱼肥。', '张志和', '渔歌子', '唐', '春'],
+  ['春城无处不飞花，寒食东风御柳斜。', '韩翃', '寒食', '唐', '春'],
+  ['今夜月明人尽望，不知秋思落谁家。', '王建', '十五夜望月寄杜郎中', '唐', '秋'],
+  ['潮平两岸阔，风正一帆悬。', '王湾', '次北固山下', '唐', '写景'],
+  ['海日生残夜，江春入旧年。', '王湾', '次北固山下', '唐', '哲理'],
+  ['人人尽说江南好，游人只合江南老。', '韦庄', '菩萨蛮', '唐', '写景'],
+  ['劝君莫惜金缕衣，劝君惜取少年时。', '杜秋娘', '金缕衣', '唐', '时间'],
+  ['花开堪折直须折，莫待无花空折枝。', '杜秋娘', '金缕衣', '唐', '时间'],
+  // ---- 宋 ----
+  ['碧云天，黄叶地，秋色连波，波上寒烟翠。', '范仲淹', '苏幕遮', '宋', '秋'],
+  ['先天下之忧而忧，后天下之乐而乐。', '范仲淹', '岳阳楼记', '宋', '爱国'],
+  ['不以物喜，不以己悲。', '范仲淹', '岳阳楼记', '宋', '哲理'],
+  ['无可奈何花落去，似曾相识燕归来。', '晏殊', '浣溪沙', '宋', '哲理'],
+  ['昨夜西风凋碧树，独上高楼，望尽天涯路。', '晏殊', '蝶恋花', '宋', '励志'],
+  ['衣带渐宽终不悔，为伊消得人憔悴。', '柳永', '蝶恋花', '宋', '爱情'],
+  ['多情自古伤离别，更那堪冷落清秋节。', '柳永', '雨霖铃', '宋', '送别'],
+  ['今宵酒醒何处？杨柳岸，晓风残月。', '柳永', '雨霖铃', '宋', '送别'],
+  ['月上柳梢头，人约黄昏后。', '欧阳修', '生查子·元夕', '宋', '节日'],
+  ['泪眼问花花不语，乱红飞过秋千去。', '欧阳修', '蝶恋花', '宋', '抒怀'],
+  ['醉翁之意不在酒，在乎山水之间也。', '欧阳修', '醉翁亭记', '宋', '哲理'],
+  ['忧劳可以兴国，逸豫可以亡身。', '欧阳修', '五代史伶官传序', '宋', '哲理'],
+  ['春风又绿江南岸，明月何时照我还。', '王安石', '泊船瓜洲', '宋', '思乡'],
+  ['不畏浮云遮望眼，自缘身在最高层。', '王安石', '登飞来峰', '宋', '励志'],
+  ['墙角数枝梅，凌寒独自开。', '王安石', '梅花', '宋', '冬'],
+  ['遥知不是雪，为有暗香来。', '王安石', '梅花', '宋', '冬'],
+  ['爆竹声中一岁除，春风送暖入屠苏。', '王安石', '元日', '宋', '节日'],
+  ['千门万户曈曈日，总把新桃换旧符。', '王安石', '元日', '宋', '节日'],
+  ['看似寻常最奇崛，成如容易却艰辛。', '王安石', '题张司业诗', '宋', '读书'],
+  ['但愿人长久，千里共婵娟。', '苏轼', '水调歌头', '宋', '月夜'],
+  ['人有悲欢离合，月有阴晴圆缺。', '苏轼', '水调歌头', '宋', '哲理'],
+  ['明月几时有？把酒问青天。', '苏轼', '水调歌头', '宋', '月夜'],
+  ['大江东去，浪淘尽，千古风流人物。', '苏轼', '念奴娇·赤壁怀古', '宋', '抒怀'],
+  ['江山如画，一时多少豪杰。', '苏轼', '念奴娇·赤壁怀古', '宋', '抒怀'],
+  ['竹外桃花三两枝，春江水暖鸭先知。', '苏轼', '惠崇春江晚景', '宋', '春'],
+  ['蒌蒿满地芦芽短，正是河豚欲上时。', '苏轼', '惠崇春江晚景', '宋', '春'],
+  ['欲把西湖比西子，淡妆浓抹总相宜。', '苏轼', '饮湖上初晴后雨', '宋', '山水'],
+  ['水光潋滟晴方好，山色空蒙雨亦奇。', '苏轼', '饮湖上初晴后雨', '宋', '山水'],
+  ['横看成岭侧成峰，远近高低各不同。', '苏轼', '题西林壁', '宋', '哲理'],
+  ['不识庐山真面目，只缘身在此山中。', '苏轼', '题西林壁', '宋', '哲理'],
+  ['荷尽已无擎雨盖，菊残犹有傲霜枝。', '苏轼', '赠刘景文', '宋', '冬'],
+  ['一年好景君须记，最是橙黄橘绿时。', '苏轼', '赠刘景文', '宋', '秋'],
+  ['会挽雕弓如满月，西北望，射天狼。', '苏轼', '江城子·密州出猎', '宋', '爱国'],
+  ['十年生死两茫茫，不思量，自难忘。', '苏轼', '江城子·乙卯正月二十日夜记梦', '宋', '爱情'],
+  ['人间有味是清欢。', '苏轼', '浣溪沙', '宋', '哲理'],
+  ['回首向来萧瑟处，归去，也无风雨也无晴。', '苏轼', '定风波', '宋', '哲理'],
+  ['竹杖芒鞋轻胜马，谁怕？一蓑烟雨任平生。', '苏轼', '定风波', '宋', '哲理'],
+  ['人生到处知何似，应似飞鸿踏雪泥。', '苏轼', '和子由渑池怀旧', '宋', '哲理'],
+  ['旧书不厌百回读，熟读深思子自知。', '苏轼', '送安惇秀才失解西归', '宋', '读书'],
+  ['博观而约取，厚积而薄发。', '苏轼', '稼说送张琥', '宋', '读书'],
+  ['腹有诗书气自华。', '苏轼', '和董传留别', '宋', '读书'],
+  ['春宵一刻值千金，花有清香月有阴。', '苏轼', '春宵', '宋', '春'],
+  ['生当作人杰，死亦为鬼雄。', '李清照', '夏日绝句', '宋', '爱国'],
+  ['至今思项羽，不肯过江东。', '李清照', '夏日绝句', '宋', '爱国'],
+  ['知否，知否？应是绿肥红瘦。', '李清照', '如梦令', '宋', '春'],
+  ['兴尽晚回舟，误入藕花深处。', '李清照', '如梦令', '宋', '夏'],
+  ['莫道不消魂，帘卷西风，人比黄花瘦。', '李清照', '醉花阴', '宋', '秋'],
+  ['此情无计可消除，才下眉头，却上心头。', '李清照', '一剪梅', '宋', '爱情'],
+  ['花自飘零水自流。', '李清照', '一剪梅', '宋', '爱情'],
+  ['寻寻觅觅，冷冷清清，凄凄惨惨戚戚。', '李清照', '声声慢', '宋', '秋'],
+  ['乍暖还寒时候，最难将息。', '李清照', '声声慢', '宋', '秋'],
+  ['物是人非事事休，欲语泪先流。', '李清照', '武陵春', '宋', '抒怀'],
+  ['只恐双溪舴艋舟，载不动许多愁。', '李清照', '武陵春', '宋', '抒怀'],
+  ['九万里风鹏正举。', '李清照', '渔家傲', '宋', '励志'],
+  ['山重水复疑无路，柳暗花明又一村。', '陆游', '游山西村', '宋', '哲理'],
+  ['纸上得来终觉浅，绝知此事要躬行。', '陆游', '冬夜读书示子聿', '宋', '读书'],
+  ['王师北定中原日，家祭无忘告乃翁。', '陆游', '示儿', '宋', '爱国'],
+  ['僵卧孤村不自哀，尚思为国戍轮台。', '陆游', '十一月四日风雨大作', '宋', '爱国'],
+  ['夜阑卧听风吹雨，铁马冰河入梦来。', '陆游', '十一月四日风雨大作', '宋', '爱国'],
+  ['零落成泥碾作尘，只有香如故。', '陆游', '卜算子·咏梅', '宋', '励志'],
+  ['楼船夜雪瓜洲渡，铁马秋风大散关。', '陆游', '书愤', '宋', '爱国'],
+  ['小楼一夜听春雨，深巷明朝卖杏花。', '陆游', '临安春雨初霁', '宋', '春'],
+  ['汝果欲学诗，工夫在诗外。', '陆游', '示子遹', '宋', '读书'],
+  ['文章本天成，妙手偶得之。', '陆游', '文章', '宋', '读书'],
+  ['小荷才露尖尖角，早有蜻蜓立上头。', '杨万里', '小池', '宋', '夏'],
+  ['接天莲叶无穷碧，映日荷花别样红。', '杨万里', '晓出净慈寺送林子方', '宋', '夏'],
+  ['毕竟西湖六月中，风光不与四时同。', '杨万里', '晓出净慈寺送林子方', '宋', '夏'],
+  ['政入万山围子里，一山放出一山拦。', '杨万里', '过松源晨炊漆公店', '宋', '哲理'],
+  ['昼出耘田夜绩麻，村庄儿女各当家。', '范成大', '四时田园杂兴', '宋', '田园'],
+  ['童孙未解供耕织，也傍桑阴学种瓜。', '范成大', '四时田园杂兴', '宋', '田园'],
+  ['梅子金黄杏子肥，麦花雪白菜花稀。', '范成大', '四时田园杂兴', '宋', '夏'],
+  ['等闲识得东风面，万紫千红总是春。', '朱熹', '春日', '宋', '春'],
+  ['胜日寻芳泗水滨，无边光景一时新。', '朱熹', '春日', '宋', '春'],
+  ['问渠那得清如许？为有源头活水来。', '朱熹', '观书有感', '宋', '读书'],
+  ['半亩方塘一鉴开，天光云影共徘徊。', '朱熹', '观书有感', '宋', '读书'],
+  ['少年易学老难成，一寸光阴不可轻。', '朱熹', '偶成', '宋', '时间'],
+  ['醉里挑灯看剑，梦回吹角连营。', '辛弃疾', '破阵子', '宋', '爱国'],
+  ['了却君王天下事，赢得生前身后名。', '辛弃疾', '破阵子', '宋', '爱国'],
+  ['众里寻他千百度，蓦然回首，那人却在，灯火阑珊处。', '辛弃疾', '青玉案·元夕', '宋', '节日'],
+  ['东风夜放花千树，更吹落、星如雨。', '辛弃疾', '青玉案·元夕', '宋', '节日'],
+  ['稻花香里说丰年，听取蛙声一片。', '辛弃疾', '西江月·夜行黄沙道中', '宋', '夏'],
+  ['明月别枝惊鹊，清风半夜鸣蝉。', '辛弃疾', '西江月·夜行黄沙道中', '宋', '夏'],
+  ['青山遮不住，毕竟东流去。', '辛弃疾', '菩萨蛮·书江西造口壁', '宋', '哲理'],
+  ['郁孤台下清江水，中间多少行人泪。', '辛弃疾', '菩萨蛮·书江西造口壁', '宋', '爱国'],
+  ['千古兴亡多少事？悠悠。不尽长江滚滚流。', '辛弃疾', '南乡子·登京口北固亭有怀', '宋', '抒怀'],
+  ['天下英雄谁敌手？曹刘。', '辛弃疾', '南乡子·登京口北固亭有怀', '宋', '抒怀'],
+  ['何处望神州？满眼风光北固楼。', '辛弃疾', '南乡子·登京口北固亭有怀', '宋', '爱国'],
+  ['少年不识愁滋味，爱上层楼。', '辛弃疾', '丑奴儿·书博山道中壁', '宋', '抒怀'],
+  ['而今识尽愁滋味，欲说还休。', '辛弃疾', '丑奴儿·书博山道中壁', '宋', '抒怀'],
+  ['我见青山多妩媚，料青山见我应如是。', '辛弃疾', '贺新郎', '宋', '抒怀'],
+  ['凭谁问：廉颇老矣，尚能饭否。', '辛弃疾', '永遇乐·京口北固亭怀古', '宋', '抒怀'],
+  ['莫等闲，白了少年头，空悲切。', '岳飞', '满江红', '宋', '时间'],
+  ['三十功名尘与土，八千里路云和月。', '岳飞', '满江红', '宋', '爱国'],
+  ['人生自古谁无死，留取丹心照汗青。', '文天祥', '过零丁洋', '宋', '爱国'],
+  ['山河破碎风飘絮，身世浮沉雨打萍。', '文天祥', '过零丁洋', '宋', '爱国'],
+  ['天地有正气，杂然赋流形。', '文天祥', '正气歌', '宋', '爱国'],
+  ['两情若是久长时，又岂在朝朝暮暮。', '秦观', '鹊桥仙', '宋', '爱情'],
+  ['金风玉露一相逢，便胜却人间无数。', '秦观', '鹊桥仙', '宋', '爱情'],
+  ['山外青山楼外楼，西湖歌舞几时休。', '林升', '题临安邸', '宋', '爱国'],
+  ['暖风熏得游人醉，直把杭州作汴州。', '林升', '题临安邸', '宋', '爱国'],
+  ['春色满园关不住，一枝红杏出墙来。', '叶绍翁', '游园不值', '宋', '春'],
+  ['应怜屐齿印苍苔，小扣柴扉久不开。', '叶绍翁', '游园不值', '宋', '春'],
+  ['绿遍山原白满川，子规声里雨如烟。', '翁卷', '乡村四月', '宋', '田园'],
+  ['黄梅时节家家雨，青草池塘处处蛙。', '赵师秀', '约客', '宋', '夏'],
+  ['沾衣欲湿杏花雨，吹面不寒杨柳风。', '志南', '绝句', '宋', '春'],
+  ['我住长江头，君住长江尾。', '李之仪', '卜算子', '宋', '爱情'],
+  ['落花人独立，微雨燕双飞。', '晏几道', '临江仙', '宋', '抒怀'],
+  ['当时明月在，曾照彩云归。', '晏几道', '临江仙', '宋', '月夜'],
+  ['红杏枝头春意闹。', '宋祁', '玉楼春', '宋', '春'],
+  ['梅须逊雪三分白，雪却输梅一段香。', '卢梅坡', '雪梅', '宋', '冬'],
+  ['由俭入奢易，由奢入俭难。', '司马光', '训俭示康', '宋', '哲理'],
+  // ---- 元 · 明 · 清 ----
+  ['枯藤老树昏鸦，小桥流水人家。', '马致远', '天净沙·秋思', '元', '秋'],
+  ['夕阳西下，断肠人在天涯。', '马致远', '天净沙·秋思', '元', '思乡'],
+  ['不要人夸颜色好，只留清气满乾坤。', '王冕', '墨梅', '元', '励志'],
+  ['我家洗砚池头树，朵朵花开淡墨痕。', '王冕', '墨梅', '元', '励志'],
+  ['十年窗下无人问，一举成名天下知。', '高明', '琵琶记', '元', '读书'],
+  ['千锤万凿出深山，烈火焚烧若等闲。', '于谦', '石灰吟', '明', '励志'],
+  ['粉骨碎身浑不怕，要留清白在人间。', '于谦', '石灰吟', '明', '励志'],
+  ['滚滚长江东逝水，浪花淘尽英雄。', '杨慎', '临江仙', '明', '抒怀'],
+  ['古今多少事，都付笑谈中。', '杨慎', '临江仙', '明', '抒怀'],
+  ['咬定青山不放松，立根原在破岩中。', '郑燮', '竹石', '清', '励志'],
+  ['千磨万击还坚劲，任尔东西南北风。', '郑燮', '竹石', '清', '励志'],
+  ['白日不到处，青春恰自来。', '袁枚', '苔', '清', '励志'],
+  ['苔花如米小，也学牡丹开。', '袁枚', '苔', '清', '励志'],
+  ['江山代有才人出，各领风骚数百年。', '赵翼', '论诗', '清', '读书'],
+  ['落红不是无情物，化作春泥更护花。', '龚自珍', '己亥杂诗', '清', '励志'],
+  ['我劝天公重抖擞，不拘一格降人才。', '龚自珍', '己亥杂诗', '清', '爱国'],
+  ['九州生气恃风雷，万马齐喑究可哀。', '龚自珍', '己亥杂诗', '清', '爱国'],
+  ['人生若只如初见。', '纳兰性德', '木兰花令·拟古决绝词', '清', '爱情'],
+  ['山一程，水一程，身向榆关那畔行。', '纳兰性德', '长相思', '清', '思乡'],
+  ['草长莺飞二月天，拂堤杨柳醉春烟。', '高鼎', '村居', '清', '春'],
+  ['儿童散学归来早，忙趁东风放纸鸢。', '高鼎', '村居', '清', '春'],
+  // ---- 近现代 ----
+  ['横眉冷对千夫指，俯首甘为孺子牛。', '鲁迅', '自嘲', '近现代', '励志'],
+  ['我以我血荐轩辕。', '鲁迅', '自题小像', '近现代', '爱国'],
+  ['其实地上本没有路，走的人多了，也便成了路。', '鲁迅', '故乡', '近现代', '哲理'],
+  ['度尽劫波兄弟在，相逢一笑泯恩仇。', '鲁迅', '题三义塔', '近现代', '友情'],
+  ['少年强则国强。', '梁启超', '少年中国说', '近现代', '爱国'],
+  ['红日初升，其道大光。', '梁启超', '少年中国说', '近现代', '爱国'],
+  ['我自横刀向天笑，去留肝胆两昆仑。', '谭嗣同', '狱中题壁', '近现代', '爱国'],
+  ['为中华之崛起而读书。', '周恩来', '语录', '近现代', '读书'],
+  ['数风流人物，还看今朝。', '毛泽东', '沁园春·雪', '近现代', '抒怀'],
+  ['北国风光，千里冰封，万里雪飘。', '毛泽东', '沁园春·雪', '近现代', '冬'],
+  ['江山如此多娇，引无数英雄竞折腰。', '毛泽东', '沁园春·雪', '近现代', '山水'],
+  ['风雨送春归，飞雪迎春到。', '毛泽东', '卜算子·咏梅', '近现代', '冬'],
+  ['待到山花烂漫时，她在丛中笑。', '毛泽东', '卜算子·咏梅', '近现代', '励志'],
+  ['红军不怕远征难，万水千山只等闲。', '毛泽东', '七律·长征', '近现代', '励志'],
+  ['世上无难事，只要肯登攀。', '毛泽东', '水调歌头·重上井冈山', '近现代', '励志'],
+  ['一万年太久，只争朝夕。', '毛泽东', '满江红·和郭沫若同志', '近现代', '时间'],
+  ['牢骚太盛防肠断，风物长宜放眼量。', '毛泽东', '七律·和柳亚子先生', '近现代', '哲理'],
+  ['聪明在于勤奋，天才在于积累。', '华罗庚', '语录', '近现代', '读书'],
+  ['读书好，好读书，读好书。', '冰心', '语录', '近现代', '读书'],
+  // ---- 经典名言（常入课本） ----
+  ['学而时习之，不亦说乎。', '《论语》', '学而', '先秦', '读书'],
+  ['温故而知新，可以为师矣。', '《论语》', '为政', '先秦', '读书'],
+  ['学而不思则罔，思而不学则殆。', '《论语》', '为政', '先秦', '读书'],
+  ['知之为知之，不知为不知，是知也。', '《论语》', '为政', '先秦', '读书'],
+  ['三人行，必有我师焉。', '《论语》', '述而', '先秦', '读书'],
+  ['知之者不如好之者，好之者不如乐之者。', '《论语》', '雍也', '先秦', '读书'],
+  ['敏而好学，不耻下问。', '《论语》', '公冶长', '先秦', '读书'],
+  ['己所不欲，勿施于人。', '《论语》', '卫灵公', '先秦', '哲理'],
+  ['岁寒，然后知松柏之后凋也。', '《论语》', '子罕', '先秦', '励志'],
+  ['士不可以不弘毅，任重而道远。', '《论语》', '泰伯', '先秦', '励志'],
+  ['工欲善其事，必先利其器。', '《论语》', '卫灵公', '先秦', '哲理'],
+  ['见贤思齐焉，见不贤而内自省也。', '《论语》', '里仁', '先秦', '读书'],
+  ['千里之行，始于足下。', '老子', '道德经', '先秦', '哲理'],
+  ['知人者智，自知者明。', '老子', '道德经', '先秦', '哲理'],
+  ['吾生也有涯，而知也无涯。', '庄子', '养生主', '先秦', '读书'],
+  ['锲而不舍，金石可镂。', '荀子', '劝学', '先秦', '读书'],
+  ['不积跬步，无以至千里。', '荀子', '劝学', '先秦', '读书'],
+  ['学不可以已。', '荀子', '劝学', '先秦', '读书'],
+  ['青，取之于蓝而青于蓝。', '荀子', '劝学', '先秦', '读书'],
+  ['博学之，审问之，慎思之，明辨之，笃行之。', '《礼记》', '中庸', '先秦', '读书'],
+  ['玉不琢，不成器；人不学，不知道。', '《礼记》', '学记', '先秦', '读书'],
+  ['天行健，君子以自强不息。', '《周易》', '乾卦', '先秦', '励志'],
+  ['非淡泊无以明志，非宁静无以致远。', '诸葛亮', '诫子书', '三国', '读书'],
+  ['非学无以广才，非志无以成学。', '诸葛亮', '诫子书', '三国', '读书'],
+  ['志当存高远。', '诸葛亮', '诫外生书', '三国', '励志'],
+  ['少壮不努力，老大徒伤悲。', '汉乐府', '长歌行', '汉', '时间'],
+  ['知识就是力量。', '培根', '语录', '外国', '读书'],
+  ['天才是百分之一的灵感加百分之九十九的汗水。', '爱迪生', '语录', '外国', '励志'],
+  ['书籍是人类进步的阶梯。', '高尔基', '语录', '外国', '读书'],
+  ['我扑在书上，就像饥饿的人扑在面包上。', '高尔基', '语录', '外国', '读书'],
+  ['理想的书籍是智慧的钥匙。', '托尔斯泰', '语录', '外国', '读书'],
+  ['书籍是全世界的营养品。', '莎士比亚', '语录', '外国', '读书'],
+  ['抛弃时间的人，时间也抛弃他。', '莎士比亚', '语录', '外国', '时间'],
+  ['我们应该有恒心，尤其要有自信心。', '居里夫人', '语录', '外国', '励志'],
+  ['我要扼住命运的咽喉，它决不能使我完全屈服。', '贝多芬', '语录', '外国', '励志'],
+  ['世界上最宽阔的是海洋，比海洋更宽阔的是天空，比天空更宽阔的是人的胸怀。', '雨果', '语录', '外国', '哲理'],
+  ['把活着的每一天，看作生命的最后一天。', '海伦·凯勒', '语录', '外国', '时间'],
+  ['世界上最快乐的事，莫过于为理想而奋斗。', '苏格拉底', '语录', '外国', '励志'],
+  ['吾爱吾师，吾更爱真理。', '亚里士多德', '语录', '外国', '读书'],
+  // ================= 扩充批次二 =================
+  // ---- 汉魏南北朝乐府民歌 ----
+  ['捐躯赴国难，视死忽如归。', '曹植', '白马篇', '三国', '爱国'],
+  ['本是同根生，相煎何太急。', '曹植', '七步诗', '三国', '亲情'],
+  ['江南可采莲，莲叶何田田。', '汉乐府', '江南', '汉', '夏'],
+  ['百川东到海，何时复西归。', '汉乐府', '长歌行', '汉', '时间'],
+  ['盈盈一水间，脉脉不得语。', '古诗十九首', '迢迢牵牛星', '汉', '爱情'],
+  ['天苍苍，野茫茫，风吹草低见牛羊。', '北朝民歌', '敕勒歌', '南北朝', '山水'],
+  ['万里赴戎机，关山度若飞。', '北朝民歌', '木兰诗', '南北朝', '边塞'],
+  ['朔气传金柝，寒光照铁衣。', '北朝民歌', '木兰诗', '南北朝', '边塞'],
+  ['将军百战死，壮士十年归。', '北朝民歌', '木兰诗', '南北朝', '边塞'],
+  ['雄兔脚扑朔，雌兔眼迷离。', '北朝民歌', '木兰诗', '南北朝', '哲理'],
+  // ---- 唐补充（一） ----
+  ['不知细叶谁裁出，二月春风似剪刀。', '贺知章', '咏柳', '唐', '春'],
+  ['夜来风雨声，花落知多少。', '孟浩然', '春晓', '唐', '春'],
+  ['故人具鸡黍，邀我至田家。', '孟浩然', '过故人庄', '唐', '田园'],
+  ['待到重阳日，还来就菊花。', '孟浩然', '过故人庄', '唐', '友情'],
+  ['近乡情更怯，不敢问来人。', '宋之问', '渡汉江', '唐', '思乡'],
+  ['年年岁岁花相似，岁岁年年人不同。', '刘希夷', '代悲白头翁', '唐', '时间'],
+  ['火树银花合，星桥铁锁开。', '苏味道', '正月十五夜', '唐', '节日'],
+  ['空山不见人，但闻人语响。', '王维', '鹿柴', '唐', '写景'],
+  ['月出惊山鸟，时鸣春涧中。', '王维', '鸟鸣涧', '唐', '春'],
+  ['人闲桂花落，夜静春山空。', '王维', '鸟鸣涧', '唐', '春'],
+  ['山中相送罢，日暮掩柴扉。', '王维', '山中送别', '唐', '送别'],
+  ['君自故乡来，应知故乡事。', '王维', '杂诗', '唐', '思乡'],
+  ['来日绮窗前，寒梅著花未。', '王维', '杂诗', '唐', '思乡'],
+  ['渭城朝雨浥轻尘，客舍青青柳色新。', '王维', '送元二使安西', '唐', '送别'],
+  ['荷叶罗裙一色裁，芙蓉向脸两边开。', '王昌龄', '采莲曲', '唐', '夏'],
+  ['举头望明月，低头思故乡。', '李白', '静夜思', '唐', '思乡'],
+  ['小时不识月，呼作白玉盘。', '李白', '古朗月行', '唐', '月夜'],
+  ['相看两不厌，只有敬亭山。', '李白', '独坐敬亭山', '唐', '写景'],
+  ['危楼高百尺，手可摘星辰。', '李白', '夜宿山寺', '唐', '写景'],
+  ['峨眉山月半轮秋，影入平羌江水流。', '李白', '峨眉山月歌', '唐', '月夜'],
+  ['此夜曲中闻折柳，谁人不起故园情。', '李白', '春夜洛城闻笛', '唐', '思乡'],
+  ['日照香炉生紫烟，遥看瀑布挂前川。', '李白', '望庐山瀑布', '唐', '山水'],
+  ['两岸青山相对出，孤帆一片日边来。', '李白', '望天门山', '唐', '山水'],
+  ['烟花三月下扬州。', '李白', '黄鹤楼送孟浩然之广陵', '唐', '送别'],
+  ['弃我去者，昨日之日不可留。', '李白', '宣州谢朓楼饯别校书叔云', '唐', '时间'],
+  ['大鹏一日同风起，扶摇直上九万里。', '李白', '上李邕', '唐', '励志'],
+  ['山随平野尽，江入大荒流。', '李白', '渡荆门送别', '唐', '写景'],
+  ['仍怜故乡水，万里送行舟。', '李白', '渡荆门送别', '唐', '思乡'],
+  ['三山半落青天外，二水中分白鹭洲。', '李白', '登金陵凤凰台', '唐', '写景'],
+  ['总为浮云能蔽日，长安不见使人愁。', '李白', '登金陵凤凰台', '唐', '抒怀'],
+  ['细雨鱼儿出，微风燕子斜。', '杜甫', '水槛遣心', '唐', '春'],
+  ['桃花一簇开无主，可爱深红爱浅红。', '杜甫', '江畔独步寻花', '唐', '春'],
+  ['留连戏蝶时时舞，自在娇莺恰恰啼。', '杜甫', '江畔独步寻花', '唐', '春'],
+  ['舍南舍北皆春水，但见群鸥日日来。', '杜甫', '客至', '唐', '田园'],
+  ['出师未捷身先死，长使英雄泪满襟。', '杜甫', '蜀相', '唐', '抒怀'],
+  ['三顾频烦天下计，两朝开济老臣心。', '杜甫', '蜀相', '唐', '抒怀'],
+  ['朱门酒肉臭，路有冻死骨。', '杜甫', '自京赴奉先县咏怀五百字', '唐', '爱国'],
+  ['射人先射马，擒贼先擒王。', '杜甫', '前出塞', '唐', '哲理'],
+  ['别裁伪体亲风雅，转益多师是汝师。', '杜甫', '戏为六绝句', '唐', '读书'],
+  ['冠盖满京华，斯人独憔悴。', '杜甫', '梦李白', '唐', '友情'],
+  ['剑外忽传收蓟北，初闻涕泪满衣裳。', '杜甫', '闻官军收河南河北', '唐', '爱国'],
+  ['即从巴峡穿巫峡，便下襄阳向洛阳。', '杜甫', '闻官军收河南河北', '唐', '抒怀'],
+  ['吴楚东南坼，乾坤日夜浮。', '杜甫', '登岳阳楼', '唐', '山水'],
+  ['终南阴岭秀，积雪浮云端。', '祖咏', '终南望余雪', '唐', '冬'],
+  ['日暮苍山远，天寒白屋贫。', '刘长卿', '逢雪宿芙蓉山主人', '唐', '冬'],
+  ['故园东望路漫漫，双袖龙钟泪不干。', '岑参', '逢入京使', '唐', '思乡'],
+  ['马上相逢无纸笔，凭君传语报平安。', '岑参', '逢入京使', '唐', '思乡'],
+  ['曲径通幽处，禅房花木深。', '常建', '题破山寺后禅院', '唐', '写景'],
+  ['山光悦鸟性，潭影空人心。', '常建', '题破山寺后禅院', '唐', '哲理'],
+  ['林暗草惊风，将军夜引弓。', '卢纶', '塞下曲', '唐', '边塞'],
+  ['平明寻白羽，没在石棱中。', '卢纶', '塞下曲', '唐', '边塞'],
+  ['不知何处吹芦管，一夜征人尽望乡。', '李益', '夜上受降城闻笛', '唐', '边塞'],
+  ['回乐峰前沙似雪，受降城外月如霜。', '李益', '夜上受降城闻笛', '唐', '边塞'],
+  ['临行密密缝，意恐迟迟归。', '孟郊', '游子吟', '唐', '亲情'],
+  ['鸟宿池边树，僧敲月下门。', '贾岛', '题李凝幽居', '唐', '写景'],
+  ['十年磨一剑，霜刃未曾试。', '贾岛', '剑客', '唐', '励志'],
+  ['洛阳城里见秋风，欲作家书意万重。', '张籍', '秋思', '唐', '思乡'],
+  ['复恐匆匆说不尽，行人临发又开封。', '张籍', '秋思', '唐', '思乡'],
+  ['还君明珠双泪垂，恨不相逢未嫁时。', '张籍', '节妇吟', '唐', '爱情'],
+  ['试玉要烧三日满，辨材须待七年期。', '白居易', '放言', '唐', '哲理'],
+  ['千呼万唤始出来，犹抱琵琶半遮面。', '白居易', '琵琶行', '唐', '抒怀'],
+  ['大弦嘈嘈如急雨，小弦切切如私语。', '白居易', '琵琶行', '唐', '抒怀'],
+  ['又送王孙去，萋萋满别情。', '白居易', '赋得古原草送别', '唐', '送别'],
+  ['足蒸暑土气，背灼炎天光。', '白居易', '观刈麦', '唐', '田园'],
+  ['力尽不知热，但惜夏日长。', '白居易', '观刈麦', '唐', '夏'],
+  ['不是花中偏爱菊，此花开尽更无花。', '元稹', '菊花', '唐', '秋'],
+  ['垂死病中惊坐起，暗风吹雨入寒窗。', '元稹', '闻乐天授江州司马', '唐', '友情'],
+  ['朱雀桥边野草花，乌衣巷口夕阳斜。', '刘禹锡', '乌衣巷', '唐', '哲理'],
+  ['杨柳青青江水平，闻郎江上唱歌声。', '刘禹锡', '竹枝词', '唐', '爱情'],
+  ['草树知春不久归，百般红紫斗芳菲。', '韩愈', '晚春', '唐', '春'],
+  ['杨花榆荚无才思，惟解漫天作雪飞。', '韩愈', '晚春', '唐', '春'],
+  ['男儿何不带吴钩，收取关山五十州。', '李贺', '南园', '唐', '爱国'],
+  ['黑云压城城欲摧，甲光向日金鳞开。', '李贺', '雁门太守行', '唐', '边塞'],
+  ['报君黄金台上意，提携玉龙为君死。', '李贺', '雁门太守行', '唐', '边塞'],
+  ['大漠沙如雪，燕山月似钩。', '李贺', '马诗', '唐', '边塞'],
+  ['天若有情天亦老。', '李贺', '金铜仙人辞汉歌', '唐', '哲理'],
+  ['少年心事当拏云。', '李贺', '致酒行', '唐', '励志'],
+  ['山雨欲来风满楼。', '许浑', '咸阳城东楼', '唐', '哲理'],
+  ['春心莫共花争发，一寸相思一寸灰。', '李商隐', '无题', '唐', '爱情'],
+  ['二十四桥明月夜，玉人何处教吹箫。', '杜牧', '寄扬州韩绰判官', '唐', '月夜'],
+  ['多情却似总无情，唯觉樽前笑不成。', '杜牧', '赠别', '唐', '送别'],
+  ['春风十里扬州路，卷上珠帘总不如。', '杜牧', '赠别', '唐', '爱情'],
+  ['银烛秋光冷画屏，轻罗小扇扑流萤。', '杜牧', '秋夕', '唐', '秋'],
+  ['过尽千帆皆不是，斜晖脉脉水悠悠。', '温庭筠', '望江南', '唐', '爱情'],
+  ['玲珑骰子安红豆，入骨相思知不知。', '温庭筠', '南歌子', '唐', '爱情'],
+  ['春水碧于天，画船听雨眠。', '韦庄', '菩萨蛮', '唐', '写景'],
+  ['今朝有酒今朝醉，明日愁来明日愁。', '罗隐', '自遣', '唐', '抒怀'],
+  ['绿树阴浓夏日长，楼台倒影入池塘。', '高骈', '山亭夏日', '唐', '夏'],
+  ['数声风笛离亭晚，君向潇湘我向秦。', '郑谷', '淮上与友人别', '唐', '送别'],
+  ['自小刺头深草里，而今渐觉出蓬蒿。', '杜荀鹤', '小松', '唐', '励志'],
+  ['愿得此身长报国，何须生入玉门关。', '戴叔伦', '塞上曲', '唐', '爱国'],
+  ['妆罢低声问夫婿，画眉深浅入时无。', '朱庆馀', '近试上张水部', '唐', '爱情'],
+  ['凭君莫话封侯事，一将功成万骨枯。', '曹松', '己亥岁', '唐', '哲理'],
+  ['易求无价宝，难得有心郎。', '鱼玄机', '赠邻女', '唐', '爱情'],
+  ['独怜幽草涧边生，上有黄鹂深树鸣。', '韦应物', '滁州西涧', '唐', '春'],
+  ['我有一瓢酒，可以慰风尘。', '韦应物', '简卢陟', '唐', '抒怀'],
+  // ---- 唐补充（二）：全诗补句 ----
+  ['床前明月光，疑是地上霜。举头望明月，低头思故乡。', '李白', '静夜思', '唐', '月夜'],
+  ['白日依山尽，黄河入海流。欲穷千里目，更上一层楼。', '王之涣', '登鹳雀楼', '唐', '励志'],
+  ['千山鸟飞绝，万径人踪灭。孤舟蓑笠翁，独钓寒江雪。', '柳宗元', '江雪', '唐', '冬'],
+  ['春种一粒粟，秋收万颗子。四海无闲田，农夫犹饿死。', '李绅', '悯农', '唐', '田园'],
+  // ---- 宋补充 ----
+  ['塞下秋来风景异，衡阳雁去无留意。', '范仲淹', '渔家傲·秋思', '宋', '边塞'],
+  ['浊酒一杯家万里，燕然未勒归无计。', '范仲淹', '渔家傲·秋思', '宋', '边塞'],
+  ['一曲新词酒一杯，去年天气旧亭台。', '晏殊', '浣溪沙', '宋', '哲理'],
+  ['燕子来时新社，梨花落后清明。', '晏殊', '破阵子·春景', '宋', '春'],
+  ['疏影横斜水清浅，暗香浮动月黄昏。', '林逋', '山园小梅', '宋', '冬'],
+  ['三秋桂子，十里荷花。', '柳永', '望海潮', '宋', '秋'],
+  ['云破月来花弄影。', '张先', '天仙子', '宋', '月夜'],
+  ['心似双丝网，中有千千结。', '张先', '千秋岁', '宋', '爱情'],
+  ['人生自是有情痴，此恨不关风与月。', '欧阳修', '玉楼春', '宋', '爱情'],
+  ['一水护田将绿绕，两山排闼送青来。', '王安石', '书湖阴先生壁', '宋', '田园'],
+  ['茅檐长扫净无苔，花木成畦手自栽。', '王安石', '书湖阴先生壁', '宋', '田园'],
+  ['老夫聊发少年狂，左牵黄，右擎苍。', '苏轼', '江城子·密州出猎', '宋', '抒怀'],
+  ['拣尽寒枝不肯栖，寂寞沙洲冷。', '苏轼', '卜算子·黄州定慧院寓居作', '宋', '抒怀'],
+  ['小舟从此逝，江海寄余生。', '苏轼', '临江仙', '宋', '哲理'],
+  ['一点浩然气，千里快哉风。', '苏轼', '水调歌头·黄州快哉亭赠张偓佺', '宋', '励志'],
+  ['谁道人生无再少？门前流水尚能西。', '苏轼', '浣溪沙', '宋', '励志'],
+  ['休将白发唱黄鸡。', '苏轼', '浣溪沙', '宋', '时间'],
+  ['日啖荔枝三百颗，不辞长作岭南人。', '苏轼', '惠州一绝', '宋', '抒怀'],
+  ['惆怅东栏一株雪，人生看得几清明。', '苏轼', '和孔密州东栏梨花', '宋', '哲理'],
+  ['桃李春风一杯酒，江湖夜雨十年灯。', '黄庭坚', '寄黄几复', '宋', '友情'],
+  ['自在飞花轻似梦，无边丝雨细如愁。', '秦观', '浣溪沙', '宋', '春'],
+  ['韶华不为少年留。', '秦观', '江城子', '宋', '时间'],
+  ['试问闲愁都几许？一川烟草，满城风絮，梅子黄时雨。', '贺铸', '青玉案', '宋', '抒怀'],
+  ['叶上初阳干宿雨，水面清圆，一一风荷举。', '周邦彦', '苏幕遮', '宋', '夏'],
+  ['常记溪亭日暮，沉醉不知归路。', '李清照', '如梦令', '宋', '夏'],
+  ['争渡，争渡，惊起一滩鸥鹭。', '李清照', '如梦令', '宋', '夏'],
+  ['天接云涛连晓雾，星河欲转千帆舞。', '李清照', '渔家傲', '宋', '励志'],
+  ['卧看满天云不动，不知云与我俱东。', '陈与义', '襄邑道中', '宋', '哲理'],
+  ['塞上长城空自许，镜中衰鬓已先斑。', '陆游', '书愤', '宋', '抒怀'],
+  ['出师一表真名世，千载谁堪伯仲间。', '陆游', '书愤', '宋', '爱国'],
+  ['早岁那知世事艰，中原北望气如山。', '陆游', '书愤', '宋', '爱国'],
+  ['莫笑农家腊酒浑，丰年留客足鸡豚。', '陆游', '游山西村', '宋', '田园'],
+  ['箫鼓追随春社近，衣冠简朴古风存。', '陆游', '游山西村', '宋', '田园'],
+  ['三万里河东入海，五千仞岳上摩天。', '陆游', '秋夜将晓出篱门迎凉有感', '宋', '爱国'],
+  ['遗民泪尽胡尘里，南望王师又一年。', '陆游', '秋夜将晓出篱门迎凉有感', '宋', '爱国'],
+  ['红酥手，黄縢酒，满城春色宫墙柳。', '陆游', '钗头凤', '宋', '爱情'],
+  ['儿童急走追黄蝶，飞入菜花无处寻。', '杨万里', '宿新市徐公店', '宋', '春'],
+  ['篱落疏疏一径深，树头新绿未成阴。', '杨万里', '宿新市徐公店', '宋', '春'],
+  ['却是平流无石处，时时闻说有沉沦。', '杨万里', '过松源晨炊漆公店', '宋', '哲理'],
+  ['梅子黄时日日晴，小溪泛尽却山行。', '曾几', '三衢道中', '宋', '夏'],
+  ['茅檐低小，溪上青青草。', '辛弃疾', '清平乐·村居', '宋', '田园'],
+  ['最喜小儿亡赖，溪头卧剥莲蓬。', '辛弃疾', '清平乐·村居', '宋', '田园'],
+  ['却将万字平戎策，换得东家种树书。', '辛弃疾', '鹧鸪天', '宋', '抒怀'],
+  ['素月分辉，明河共影，表里俱澄澈。', '张孝祥', '念奴娇·过洞庭', '宋', '月夜'],
+  ['臣心一片磁针石，不指南方不肯休。', '文天祥', '扬子江', '宋', '爱国'],
+  ['流光容易把人抛，红了樱桃，绿了芭蕉。', '蒋捷', '一剪梅·舟过吴江', '宋', '时间'],
+  ['宁可枝头抱香死，何曾吹落北风中。', '郑思肖', '寒菊', '宋', '励志'],
+  ['只有天在上，更无山与齐。', '寇准', '咏华山', '宋', '励志'],
+  ['明日复明日，明日何其多。我生待明日，万事成蹉跎。', '钱福', '明日歌', '明', '时间'],
+  // ---- 元明清补充 ----
+  ['问世间，情为何物，直教生死相许。', '元好问', '摸鱼儿·雁丘词', '元', '爱情'],
+  ['碧云天，黄花地，西风紧，北雁南飞。', '王实甫', '西厢记', '元', '秋'],
+  ['晓来谁染霜林醉？总是离人泪。', '王实甫', '西厢记', '元', '送别'],
+  ['峰峦如聚，波涛如怒，山河表里潼关路。', '张养浩', '山坡羊·潼关怀古', '元', '山水'],
+  ['兴，百姓苦；亡，百姓苦。', '张养浩', '山坡羊·潼关怀古', '元', '爱国'],
+  ['情不知所起，一往而深。', '汤显祖', '牡丹亭', '明', '爱情'],
+  ['则为你如花美眷，似水流年。', '汤显祖', '牡丹亭', '明', '爱情'],
+  ['原来姹紫嫣红开遍，似这般都付与断井颓垣。', '汤显祖', '牡丹亭', '明', '抒怀'],
+  ['踏破铁鞋无觅处，得来全不费工夫。', '冯梦龙', '警世通言', '明', '哲理'],
+  ['满纸荒唐言，一把辛酸泪。', '曹雪芹', '红楼梦', '清', '抒怀'],
+  ['假作真时真亦假，无为有处有还无。', '曹雪芹', '红楼梦', '清', '哲理'],
+  ['侬今葬花人笑痴，他年葬侬知是谁。', '曹雪芹', '红楼梦', '清', '爱情'],
+  ['新竹高于旧竹枝，全凭老干为扶持。', '郑燮', '新竹', '清', '哲理'],
+  ['牧童骑黄牛，歌声振林樾。', '袁枚', '所见', '清', '田园'],
+  ['微微风簇浪，散作满河星。', '查慎行', '舟夜书所见', '清', '月夜'],
+  ['百无一用是书生。', '黄景仁', '杂感', '清', '抒怀'],
+  ['当时只道是寻常。', '纳兰性德', '浣溪沙', '清', '爱情'],
+  ['一腔热血勤珍重，洒去犹能化碧涛。', '秋瑾', '对酒', '清', '爱国'],
+  ['我手写我口，古岂能拘牵。', '黄遵宪', '杂感', '清', '读书'],
+  ['如烟往事俱忘却，心底无私天地宽。', '陶铸', '赠曾志', '近现代', '哲理'],
+  // ---- 近现代补充 ----
+  ['哪里有天才，我是把别人喝咖啡的工夫都用在工作上的。', '鲁迅', '语录', '近现代', '读书'],
+  ['时间就是性命。无端地空耗别人的时间，其实是无异于谋财害命的。', '鲁迅', '语录', '近现代', '时间'],
+  ['从来如此，便对么？', '鲁迅', '狂人日记', '近现代', '哲理'],
+  ['不满是向上的车轮。', '鲁迅', '热风', '近现代', '励志'],
+  ['愿中国青年都摆脱冷气，只是向上走。', '鲁迅', '热风', '近现代', '励志'],
+  ['无穷的远方，无数的人们，都和我有关。', '鲁迅', '这也是生活', '近现代', '抒怀'],
+  ['燕子去了，有再来的时候；杨柳枯了，有再青的时候。', '朱自清', '匆匆', '近现代', '时间'],
+  ['我们的日子为什么一去不复返呢？', '朱自清', '匆匆', '近现代', '时间'],
+  ['墙角的花！你孤芳自赏时，天地便小了。', '冰心', '繁星', '近现代', '哲理'],
+  ['成功的花，人们只惊羡她现时的明艳！', '冰心', '繁星', '近现代', '励志'],
+  ['轻轻的我走了，正如我轻轻的来。', '徐志摩', '再别康桥', '近现代', '送别'],
+  ['我挥一挥衣袖，不带走一片云彩。', '徐志摩', '再别康桥', '近现代', '送别'],
+  ['撑着油纸伞，独自彷徨在悠长、悠长又寂寥的雨巷。', '戴望舒', '雨巷', '近现代', '抒怀'],
+  ['为什么我的眼里常含泪水？因为我对这土地爱得深沉。', '艾青', '我爱这土地', '近现代', '爱国'],
+  ['小时候，乡愁是一枚小小的邮票。', '余光中', '乡愁', '近现代', '思乡'],
+  ['既然选择了远方，便只顾风雨兼程。', '汪国真', '热爱生命', '近现代', '励志'],
+  ['黑夜给了我黑色的眼睛，我却用它寻找光明。', '顾城', '一代人', '近现代', '哲理'],
+  ['面朝大海，春暖花开。', '海子', '面朝大海，春暖花开', '近现代', '励志'],
+  ['从明天起，做一个幸福的人。', '海子', '面朝大海，春暖花开', '近现代', '励志'],
+  ['我如果爱你——绝不像攀援的凌霄花。', '舒婷', '致橡树', '近现代', '爱情'],
+  ['我行过许多地方的桥，看过许多次数的云，却只爱过一个正当最好年龄的人。', '沈从文', '湘行散记', '近现代', '爱情'],
+  ['千教万教教人求真，千学万学学做真人。', '陶行知', '语录', '近现代', '读书'],
+  ['捧着一颗心来，不带半根草去。', '陶行知', '语录', '近现代', '励志'],
+  ['行是知之始，知是行之成。', '陶行知', '语录', '近现代', '读书'],
+  ['大江歌罢掉头东，邃密群科济世穷。', '周恩来', '大江歌罢掉头东', '近现代', '爱国'],
+  ['砍头不要紧，只要主义真。', '夏明翰', '就义诗', '近现代', '爱国'],
+  ['取义成仁今日事，人间遍种自由花。', '陈毅', '梅岭三章', '近现代', '爱国'],
+  ['雄关漫道真如铁，而今迈步从头越。', '毛泽东', '忆秦娥·娄山关', '近现代', '励志'],
+  ['天若有情天亦老，人间正道是沧桑。', '毛泽东', '七律·人民解放军占领南京', '近现代', '哲理'],
+  ['为有牺牲多壮志，敢教日月换新天。', '毛泽东', '七律·到韶山', '近现代', '励志'],
+  ['不管风吹浪打，胜似闲庭信步。', '毛泽东', '水调歌头·游泳', '近现代', '励志'],
+  ['踏遍青山人未老，风景这边独好。', '毛泽东', '清平乐·会昌', '近现代', '励志'],
+  // ---- 外国补充 ----
+  ['如果说我看得比别人更远些，那是因为我站在巨人的肩膀上。', '牛顿', '语录', '外国', '哲理'],
+  ['成功＝艰苦的劳动＋正确的方法＋少说空话。', '爱因斯坦', '语录', '外国', '励志'],
+  ['你热爱生命吗？那么别浪费时间，因为时间是组成生命的材料。', '富兰克林', '语录', '外国', '时间'],
+  ['读一本好书，就是和许多高尚的人谈话。', '歌德', '语录', '外国', '读书'],
+  ['假如生活欺骗了你，不要悲伤，不要心急。', '普希金', '语录', '外国', '哲理'],
+  ['我所学到的任何有价值的知识都是由自学中得来的。', '达尔文', '语录', '外国', '读书'],
+  ['时间是一个伟大的作者，它会给每个人写出完美的结局来。', '卓别林', '语录', '外国', '时间'],
+  ['在科学上没有平坦的大道，只有不畏劳苦沿着陡峭山路攀登的人，才有希望达到光辉的顶点。', '马克思', '语录', '外国', '励志'],
+  ['书籍是巨大的力量。', '列宁', '语录', '外国', '读书'],
+  ['世界以痛吻我，要我报之以歌。', '泰戈尔', '语录', '外国', '哲理'],
+  ['天空没有留下鸟的痕迹，但我已飞过。', '泰戈尔', '语录', '外国', '哲理'],
+  ['世上只有一种英雄主义，就是在认清生活真相之后依然热爱生活。', '罗曼·罗兰', '语录', '外国', '哲理'],
+  ['人可以被消灭，但不能被打败。', '海明威', '老人与海', '外国', '励志'],
+  ['走自己的路，让别人去说吧。', '但丁', '神曲', '外国', '哲理'],
+  // ================= 扩充批次三 =================
+  // ---- 唐再补 ----
+  ['树树皆秋色，山山唯落晖。', '王绩', '野望', '唐', '秋'],
+  ['城阙辅三秦，风烟望五津。', '王勃', '送杜少府之任蜀州', '唐', '送别'],
+  ['宁为百夫长，胜作一书生。', '杨炯', '从军行', '唐', '边塞'],
+  ['昔时人已没，今日水犹寒。', '骆宾王', '于易水送别', '唐', '送别'],
+  ['惟有门前镜湖水，春风不改旧时波。', '贺知章', '回乡偶书', '唐', '思乡'],
+  ['情人怨遥夜，竟夕起相思。', '张九龄', '望月怀远', '唐', '爱情'],
+  ['木落雁南度，北风江上寒。', '孟浩然', '早寒江上有怀', '唐', '秋'],
+  ['年年战骨埋荒外，空见蒲桃入汉家。', '李颀', '古从军行', '唐', '边塞'],
+  ['草枯鹰眼疾，雪尽马蹄轻。', '王维', '观猎', '唐', '冬'],
+  ['桃红复含宿雨，柳绿更带朝烟。', '王维', '田园乐', '唐', '春'],
+  ['相逢意气为君饮，系马高楼垂柳边。', '王维', '少年行', '唐', '抒怀'],
+  ['永结无情游，相期邈云汉。', '李白', '月下独酌', '唐', '月夜'],
+  ['金樽清酒斗十千，玉盘珍羞直万钱。', '李白', '行路难', '唐', '抒怀'],
+  ['停杯投箸不能食，拔剑四顾心茫然。', '李白', '行路难', '唐', '抒怀'],
+  ['闲来垂钓碧溪上，忽复乘舟梦日边。', '李白', '行路难', '唐', '励志'],
+  ['与尔同销万古愁。', '李白', '将进酒', '唐', '抒怀'],
+  ['登高壮观天地间，大江茫茫去不还。', '李白', '庐山谣寄卢侍御虚舟', '唐', '山水'],
+  ['云想衣裳花想容，春风拂槛露华浓。', '李白', '清平调', '唐', '爱情'],
+  ['长安一片月，万户捣衣声。', '李白', '子夜吴歌', '唐', '月夜'],
+  ['秋风吹不尽，总是玉关情。', '李白', '子夜吴歌', '唐', '思乡'],
+  ['由来征战地，不见有人还。', '李白', '关山月', '唐', '边塞'],
+  ['春风知别苦，不遣柳条青。', '李白', '劳劳亭', '唐', '送别'],
+  ['造化钟神秀，阴阳割昏晓。', '杜甫', '望岳', '唐', '山水'],
+  ['今夜鄜州月，闺中只独看。', '杜甫', '月夜', '唐', '月夜'],
+  ['戍鼓断人行，边秋一雁声。', '杜甫', '月夜忆舍弟', '唐', '秋'],
+  ['锦江春色来天地，玉垒浮云变古今。', '杜甫', '登楼', '唐', '春'],
+  ['晓看红湿处，花重锦官城。', '杜甫', '春夜喜雨', '唐', '春'],
+  ['此曲只应天上有，人间能得几回闻。', '杜甫', '赠花卿', '唐', '抒怀'],
+  ['人生不相见，动如参与商。', '杜甫', '赠卫八处士', '唐', '友情'],
+  ['却看妻子愁何在，漫卷诗书喜欲狂。', '杜甫', '闻官军收河南河北', '唐', '抒怀'],
+  ['清江一曲抱村流，长夏江村事事幽。', '杜甫', '江村', '唐', '夏'],
+  ['庭树不知人去尽，春来还发旧时花。', '岑参', '山房春事', '唐', '哲理'],
+  ['走马西来欲到天，辞家见月两回圆。', '岑参', '碛中作', '唐', '边塞'],
+  ['今夜偏知春气暖，虫声新透绿窗纱。', '刘方平', '月夜', '唐', '春'],
+  ['凉月如眉挂柳湾，越中山色镜中看。', '戴叔伦', '兰溪棹歌', '唐', '月夜'],
+  ['雨中黄叶树，灯下白头人。', '司空曙', '喜外弟卢纶见宿', '唐', '秋'],
+  ['妇姑相唤浴蚕去，闲着中庭栀子花。', '王建', '雨过山村', '唐', '田园'],
+  ['新年都未有芳华，二月初惊见草芽。', '韩愈', '春雪', '唐', '春'],
+  ['白雪却嫌春色晚，故穿庭树作飞花。', '韩愈', '春雪', '唐', '春'],
+  ['九曲黄河万里沙，浪淘风簸自天涯。', '刘禹锡', '浪淘沙', '唐', '山水'],
+  ['遥望洞庭山水翠，白银盘里一青螺。', '刘禹锡', '望洞庭', '唐', '山水'],
+  ['巴山楚水凄凉地，二十三年弃置身。', '刘禹锡', '酬乐天扬州初逢席上见赠', '唐', '抒怀'],
+  ['今日听君歌一曲，暂凭杯酒长精神。', '刘禹锡', '酬乐天扬州初逢席上见赠', '唐', '励志'],
+  ['孤山寺北贾亭西，水面初平云脚低。', '白居易', '钱塘湖春行', '唐', '春'],
+  ['东船西舫悄无言，唯见江心秋月白。', '白居易', '琵琶行', '唐', '月夜'],
+  ['回眸一笑百媚生，六宫粉黛无颜色。', '白居易', '长恨歌', '唐', '爱情'],
+  ['江南好，风景旧曾谙。', '白居易', '忆江南', '唐', '写景'],
+  ['人间四月芳菲尽，山寺桃花始盛开。', '白居易', '大林寺桃花', '唐', '春'],
+  ['长恨春归无觅处，不知转入此中来。', '白居易', '大林寺桃花', '唐', '春'],
+  ['何当金络脑，快走踏清秋。', '李贺', '马诗', '唐', '励志'],
+  ['江东子弟多才俊，卷土重来未可知。', '杜牧', '题乌江亭', '唐', '哲理'],
+  ['胜败兵家事不期，包羞忍耻是男儿。', '杜牧', '题乌江亭', '唐', '哲理'],
+  ['因思杜陵梦，凫雁满回塘。', '温庭筠', '商山早行', '唐', '思乡'],
+  ['梧桐树，三更雨，不道离情正苦。', '温庭筠', '更漏子', '唐', '爱情'],
+  ['江雨霏霏江草齐，六朝如梦鸟空啼。', '韦庄', '台城', '唐', '哲理'],
+  ['苦恨年年压金线，为他人作嫁衣裳。', '秦韬玉', '贫女', '唐', '抒怀'],
+  ['打起黄莺儿，莫教枝上啼。', '金昌绪', '春怨', '唐', '爱情'],
+  // ---- 宋再补 ----
+  ['万壑有声含晚籁，数峰无语立斜阳。', '王禹偁', '村行', '宋', '秋'],
+  ['众芳摇落独暄妍，占尽风情向小园。', '林逋', '山园小梅', '宋', '冬'],
+  ['寒蝉凄切，对长亭晚，骤雨初歇。', '柳永', '雨霖铃', '宋', '送别'],
+  ['对潇潇暮雨洒江天，一番洗清秋。', '柳永', '八声甘州', '宋', '秋'],
+  ['渐霜风凄紧，关河冷落，残照当楼。', '柳永', '八声甘州', '宋', '秋'],
+  ['惟有长江水，无语东流。', '柳永', '八声甘州', '宋', '抒怀'],
+  ['酒入愁肠，化作相思泪。', '范仲淹', '苏幕遮', '宋', '思乡'],
+  ['欲寄彩笺兼尺素，山长水阔知何处。', '晏殊', '蝶恋花', '宋', '爱情'],
+  ['离愁渐远渐无穷，迢迢不断如春水。', '欧阳修', '踏莎行', '宋', '送别'],
+  ['平芜尽处是春山，行人更在春山外。', '欧阳修', '踏莎行', '宋', '送别'],
+  ['转朱阁，低绮户，照无眠。', '苏轼', '水调歌头', '宋', '月夜'],
+  ['起舞弄清影，何似在人间。', '苏轼', '水调歌头', '宋', '月夜'],
+  ['不应有恨，何事长向别时圆。', '苏轼', '水调歌头', '宋', '哲理'],
+  ['羽扇纶巾，谈笑间、樯橹灰飞烟灭。', '苏轼', '念奴娇·赤壁怀古', '宋', '抒怀'],
+  ['人生如梦，一尊还酹江月。', '苏轼', '念奴娇·赤壁怀古', '宋', '抒怀'],
+  ['莫听穿林打叶声，何妨吟啸且徐行。', '苏轼', '定风波', '宋', '励志'],
+  ['庭下如积水空明，水中藻、荇交横。', '苏轼', '记承天寺夜游', '宋', '月夜'],
+  ['何夜无月？何处无竹柏？但少闲人如吾两人者耳。', '苏轼', '记承天寺夜游', '宋', '哲理'],
+  ['清风徐来，水波不兴。', '苏轼', '赤壁赋', '宋', '写景'],
+  ['白露横江，水光接天。', '苏轼', '赤壁赋', '宋', '写景'],
+  ['哀吾生之须臾，羡长江之无穷。', '苏轼', '赤壁赋', '宋', '时间'],
+  ['佳节清明桃李笑，野田荒冢只生愁。', '黄庭坚', '清明', '宋', '节日'],
+  ['落木千山天远大，澄江一道月分明。', '黄庭坚', '登快阁', '宋', '秋'],
+  ['雾失楼台，月迷津渡。', '秦观', '踏莎行', '宋', '抒怀'],
+  ['东篱把酒黄昏后，有暗香盈袖。', '李清照', '醉花阴', '宋', '秋'],
+  ['红藕香残玉簟秋。', '李清照', '一剪梅', '宋', '秋'],
+  ['梧桐更兼细雨，到黄昏、点点滴滴。', '李清照', '声声慢', '宋', '秋'],
+  ['这次第，怎一个愁字了得。', '李清照', '声声慢', '宋', '秋'],
+  ['杏花疏影里，吹笛到天明。', '陈与义', '临江仙', '宋', '月夜'],
+  ['二十余年如一梦，此身虽在堪惊。', '陈与义', '临江仙', '宋', '时间'],
+  ['何方可化身千亿，一树梅花一放翁。', '陆游', '梅花绝句', '宋', '冬'],
+  ['泉眼无声惜细流，树阴照水爱晴柔。', '杨万里', '小池', '宋', '夏'],
+  ['日长睡起无情思，闲看儿童捉柳花。', '杨万里', '闲居初夏午睡起', '宋', '夏'],
+  ['乘风好去，长空万里，直下看山河。', '辛弃疾', '太常引', '宋', '励志'],
+  // ---- 近现代 · 外国再补 ----
+  ['心事浩茫连广宇，于无声处听惊雷。', '鲁迅', '无题', '近现代', '哲理'],
+  ['生命的意义在于付出，在于给予。', '巴金', '语录', '近现代', '哲理'],
+  ['才华是刀刃，辛苦是磨刀石。', '老舍', '语录', '近现代', '励志'],
+  ['天下第一好事，还是读书。', '季羡林', '语录', '近现代', '读书'],
+  ['人就像一粒种子，要做一粒好种子。', '袁隆平', '语录', '近现代', '励志'],
+  ['人的一生应当这样度过：当他回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧。', '奥斯特洛夫斯基', '钢铁是怎样炼成的', '外国', '励志'],
+  ['勤劳一日，可得一夜安眠；勤劳一生，可得幸福长眠。', '达·芬奇', '语录', '外国', '励志'],
+  ['苦难是人生的老师。', '巴尔扎克', '语录', '外国', '励志'],
+  ['人类的一切智慧是包含在这四个字里面的：等待和希望。', '大仲马', '基督山伯爵', '外国', '哲理'],
+  ['生活不可能像你想象得那么好，但也不会像你想象得那么糟。', '莫泊桑', '一生', '外国', '哲理'],
+  // ================= 扩充批次四（冲刺 1000 条） =================
+  // ---- 汉魏晋南北朝补 ----
+  ['东临碣石，以观沧海。', '曹操', '观沧海', '汉', '山水'],
+  ['日月之行，若出其中；星汉灿烂，若出其里。', '曹操', '观沧海', '汉', '山水'],
+  ['秋风萧瑟天气凉，草木摇落露为霜。', '曹丕', '燕歌行', '三国', '秋'],
+  ['生年不满百，常怀千岁忧。', '古诗十九首', '生年不满百', '汉', '时间'],
+  ['晨兴理荒秽，带月荷锄归。', '陶渊明', '归园田居', '晋', '田园'],
+  ['结庐在人境，而无车马喧。', '陶渊明', '饮酒·其五', '晋', '田园'],
+  ['羁鸟恋旧林，池鱼思故渊。', '陶渊明', '归园田居', '晋', '田园'],
+  // ---- 唐补 · 名句 ----
+  ['人生代代无穷已，江月年年望相似。', '张若虚', '春江花月夜', '唐', '哲理'],
+  ['儿童相见不相识，笑问客从何处来。', '贺知章', '回乡偶书', '唐', '思乡'],
+  ['移舟泊烟渚，日暮客愁新。', '孟浩然', '宿建德江', '唐', '思乡'],
+  ['寒雨连江夜入吴，平明送客楚山孤。', '王昌龄', '芙蓉楼送辛渐', '唐', '送别'],
+  ['漠漠水田飞白鹭，阴阴夏木啭黄鹂。', '王维', '积雨辋川庄作', '唐', '夏'],
+  ['荆溪白石出，天寒红叶稀。', '王维', '山中', '唐', '秋'],
+  ['思君若汶水，浩荡寄南征。', '李白', '沙丘城下寄杜甫', '唐', '友情'],
+  ['花间一壶酒，独酌无相亲。', '李白', '月下独酌', '唐', '月夜'],
+  ['君不见高堂明镜悲白发，朝如青丝暮成雪。', '李白', '将进酒', '唐', '时间'],
+  ['郎骑竹马来，绕床弄青梅。', '李白', '长干行', '唐', '爱情'],
+  ['燕山雪花大如席。', '李白', '北风行', '唐', '冬'],
+  ['名花倾国两相欢，常得君王带笑看。', '李白', '清平调', '唐', '爱情'],
+  ['一为迁客去长沙，西望长安不见家。', '李白', '与史郎中钦听黄鹤楼上吹笛', '唐', '思乡'],
+  ['白发三千丈，缘愁似个长。', '李白', '秋浦歌', '唐', '抒怀'],
+  ['众鸟高飞尽，孤云独去闲。', '李白', '独坐敬亭山', '唐', '写景'],
+  ['遥怜小儿女，未解忆长安。', '杜甫', '月夜', '唐', '亲情'],
+  ['渭北春天树，江东日暮云。', '杜甫', '春日忆李白', '唐', '友情'],
+  ['何时一樽酒，重与细论文。', '杜甫', '春日忆李白', '唐', '友情'],
+  ['敏捷诗千首，飘零酒一杯。', '杜甫', '不见', '唐', '友情'],
+  ['野径云俱黑，江船火独明。', '杜甫', '春夜喜雨', '唐', '春'],
+  ['夜雨剪春韭，新炊间黄粱。', '杜甫', '赠卫八处士', '唐', '友情'],
+  ['荷笠带斜阳，青山独归远。', '刘长卿', '送灵澈上人', '唐', '送别'],
+  ['曲终人不见，江上数峰青。', '钱起', '省试湘灵鼓瑟', '唐', '抒怀'],
+  ['慈母手中线，游子身上衣。', '孟郊', '游子吟', '唐', '亲情'],
+  ['山桃红花满上头，蜀江春水拍山流。', '刘禹锡', '竹枝词', '唐', '春'],
+  ['七月七日长生殿，夜半无人私语时。', '白居易', '长恨歌', '唐', '爱情'],
+  ['诚知此恨人人有，贫贱夫妻百事哀。', '元稹', '遣悲怀', '唐', '爱情'],
+  ['天意怜幽草，人间重晚晴。', '李商隐', '晚晴', '唐', '哲理'],
+  ['侯门一入深如海，从此萧郎是路人。', '崔郊', '赠去婢', '唐', '爱情'],
+  ['残星几点雁横塞，长笛一声人倚楼。', '赵嘏', '长安晚秋', '唐', '秋'],
+  ['羌笛何须怨杨柳，春风不度玉门关。', '王之涣', '凉州词', '唐', '边塞'],
+  ['灭烛怜光满，披衣觉露滋。', '张九龄', '望月怀远', '唐', '月夜'],
+  ['昔人已乘黄鹤去，此地空余黄鹤楼。', '崔颢', '黄鹤楼', '唐', '哲理'],
+  ['凭君莫话封侯事，一将功成万骨枯。', '曹松', '己亥岁', '唐', '哲理'],
+  ['苦恨年年压金线，为他人作嫁衣裳。', '秦韬玉', '贫女', '唐', '抒怀'],
+  // ---- 唐补 · 全诗 ----
+  ['春眠不觉晓，处处闻啼鸟。夜来风雨声，花落知多少。', '孟浩然', '春晓', '唐', '春'],
+  ['红豆生南国，春来发几枝。愿君多采撷，此物最相思。', '王维', '相思', '唐', '爱情'],
+  ['松下问童子，言师采药去。只在此山中，云深不知处。', '贾岛', '寻隐者不遇', '唐', '写景'],
+  ['空山不见人，但闻人语响。返景入深林，复照青苔上。', '王维', '鹿柴', '唐', '写景'],
+  ['独坐幽篁里，弹琴复长啸。深林人不知，明月来相照。', '王维', '竹里馆', '唐', '月夜'],
+  ['人闲桂花落，夜静春山空。月出惊山鸟，时鸣春涧中。', '王维', '鸟鸣涧', '唐', '春'],
+  ['小娃撑小艇，偷采白莲回。不解藏踪迹，浮萍一道开。', '白居易', '池上', '唐', '夏'],
+  ['终南阴岭秀，积雪浮云端。林表明霁色，城中增暮寒。', '祖咏', '终南望余雪', '唐', '冬'],
+  ['黄四娘家花满蹊，千朵万朵压枝低。', '杜甫', '江畔独步寻花', '唐', '春'],
+  ['十年磨一剑，霜刃未曾试。今日把示君，谁有不平事？', '贾岛', '剑客', '唐', '励志'],
+  ['月落乌啼霜满天，江枫渔火对愁眠。姑苏城外寒山寺，夜半钟声到客船。', '张继', '枫桥夜泊', '唐', '月夜'],
+  ['秦时明月汉时关，万里长征人未还。但使龙城飞将在，不教胡马度阴山。', '王昌龄', '出塞', '唐', '边塞'],
+  ['葡萄美酒夜光杯，欲饮琵琶马上催。醉卧沙场君莫笑，古来征战几人回。', '王翰', '凉州词', '唐', '边塞'],
+  ['独在异乡为异客，每逢佳节倍思亲。遥知兄弟登高处，遍插茱萸少一人。', '王维', '九月九日忆山东兄弟', '唐', '思乡'],
+  ['劝君更尽一杯酒，西出阳关无故人。', '王维', '送元二使安西', '唐', '送别'],
+  ['海上生明月，天涯共此时。情人怨遥夜，竟夕起相思。', '张九龄', '望月怀远', '唐', '月夜'],
+  // ---- 宋补 ----
+  ['弄潮儿向涛头立，手把红旗旗不湿。', '潘阆', '酒泉子', '宋', '励志'],
+  ['自古驱民在信诚，一言为重百金轻。', '王安石', '商鞅', '宋', '哲理'],
+  ['我欲乘风归去，又恐琼楼玉宇，高处不胜寒。', '苏轼', '水调歌头', '宋', '月夜'],
+  ['山下兰芽短浸溪，松间沙路净无泥。', '苏轼', '浣溪沙', '宋', '写景'],
+  ['惟江上之清风，与山间之明月。', '苏轼', '赤壁赋', '宋', '哲理'],
+  ['九死南荒吾不恨，兹游奇绝冠平生。', '苏轼', '六月二十日夜渡海', '宋', '抒怀'],
+  ['山抹微云，天连衰草。', '秦观', '满庭芳', '宋', '秋'],
+  ['位卑未敢忘忧国，事定犹须待阖棺。', '陆游', '病起书怀', '宋', '爱国'],
+  ['古人学问无遗力，少壮工夫老始成。', '陆游', '冬夜读书示子聿', '宋', '读书'],
+  ['楚天千里清秋，水随天去秋无际。', '辛弃疾', '水龙吟·登建康赏心亭', '宋', '秋'],
+  ['更能消、几番风雨，匆匆春又归去。', '辛弃疾', '摸鱼儿', '宋', '春'],
+  ['二十四桥仍在，波心荡、冷月无声。', '姜夔', '扬州慢', '宋', '月夜'],
+  ['寒夜客来茶当酒，竹炉汤沸火初红。', '杜耒', '寒夜', '宋', '友情'],
+  ['好鸟枝头亦朋友，落花水面皆文章。', '翁森', '四时读书乐', '宋', '读书'],
+  ['读书之乐乐何如？绿满窗前草不除。', '翁森', '四时读书乐', '宋', '读书'],
+  ['怒发冲冠，凭栏处、潇潇雨歇。', '岳飞', '满江红', '宋', '爱国'],
+  ['壮志饥餐胡虏肉，笑谈渴饮匈奴血。', '岳飞', '满江红', '宋', '爱国'],
+  ['惶恐滩头说惶恐，零丁洋里叹零丁。', '文天祥', '过零丁洋', '宋', '爱国'],
+  ['风一更，雪一更，聒碎乡心梦不成。', '纳兰性德', '长相思', '清', '思乡'],
+  ['昨夜西风凋碧树，独上高楼，望尽天涯路。', '晏殊', '蝶恋花', '宋', '励志'],
+  ['云树绕堤沙，怒涛卷霜雪，天堑无涯。', '柳永', '望海潮', '宋', '山水'],
+  ['重湖叠巘清嘉，有三秋桂子，十里荷花。', '柳永', '望海潮', '宋', '秋'],
+  ['系我一生心，负你千行泪。', '柳永', '忆帝京', '宋', '爱情'],
+  ['一场愁梦酒醒时，斜阳却照深深院。', '晏殊', '踏莎行', '宋', '春'],
+  ['池上碧苔三四点，叶底黄鹂一两声。', '晏殊', '破阵子·春景', '宋', '春'],
+  ['绿杨芳草长亭路，年少抛人容易去。', '晏殊', '玉楼春', '宋', '时间'],
+  ['泪眼问花花不语，乱红飞过秋千去。', '欧阳修', '蝶恋花', '宋', '春'],
+  ['花光浓烂柳轻明，酌酒花前送我行。', '欧阳修', '别滁', '宋', '送别'],
+  ['平芜尽处是春山，行人更在春山外。', '欧阳修', '踏莎行', '宋', '送别'],
+  ['白发戴花君莫笑，人生何处似尊前。', '欧阳修', '浣溪沙', '宋', '抒怀'],
+  ['归来笑拈梅花嗅，春在枝头已十分。', '某尼', '悟道诗', '宋', '哲理'],
+  ['少年不识愁滋味，爱上层楼。爱上层楼，为赋新词强说愁。', '辛弃疾', '丑奴儿·书博山道中壁', '宋', '抒怀'],
+  ['众鸟高飞尽，孤云独去闲。', '李白', '独坐敬亭山', '唐', '写景'],
+  ['花自飘零水自流。一种相思，两处闲愁。', '李清照', '一剪梅', '宋', '爱情'],
+  ['生怕离怀别苦，多少事、欲说还休。', '李清照', '凤凰台上忆吹箫', '宋', '爱情'],
+  ['不知蕴藉几多香，但见包藏无限意。', '李清照', '玉楼春', '宋', '冬'],
+  ['雪里已知春信至，寒梅点缀琼枝腻。', '李清照', '渔家傲', '宋', '冬'],
+  ['灯花耿耿漏迟迟，人别后、夜凉初。', '李清照', '行香子', '宋', '秋'],
+  ['山映斜阳天接水，芳草无情，更在斜阳外。', '范仲淹', '苏幕遮', '宋', '秋'],
+  ['黯乡魂，追旅思。夜夜除非，好梦留人睡。', '范仲淹', '苏幕遮', '宋', '思乡'],
+  ['长安古道马迟迟，高柳乱蝉嘶。', '柳永', '少年游', '宋', '秋'],
+  ['初闻涕泪满衣裳，却看妻子愁何在。', '杜甫', '闻官军收河南河北', '唐', '爱国'],
+  ['人生到处知何似，应似飞鸿踏雪泥。', '苏轼', '和子由渑池怀旧', '宋', '哲理'],
+  ['泥上偶然留指爪，鸿飞那复计东西。', '苏轼', '和子由渑池怀旧', '宋', '哲理'],
+  ['宁可枝头抱香死，何曾吹落北风中。', '郑思肖', '寒菊', '宋', '励志'],
+  ['花开不并百花丛，独立疏篱趣未穷。', '郑思肖', '寒菊', '宋', '励志'],
+  ['十年生死两茫茫，不思量，自难忘。', '苏轼', '江城子', '宋', '爱情'],
+  ['料得年年肠断处，明月夜，短松冈。', '苏轼', '江城子', '宋', '爱情'],
+  ['我住长江头，君住长江尾。日日思君不见君，共饮长江水。', '李之仪', '卜算子', '宋', '爱情'],
+  ['东风恶，欢情薄。一怀愁绪，几年离索。', '陆游', '钗头凤', '宋', '爱情'],
+  ['桃花落，闲池阁。山盟虽在，锦书难托。', '陆游', '钗头凤', '宋', '爱情'],
+  ['无意苦争春，一任群芳妒。', '陆游', '卜算子·咏梅', '宋', '励志'],
+  ['驿外断桥边，寂寞开无主。', '陆游', '卜算子·咏梅', '宋', '冬'],
+  ['已是黄昏独自愁，更著风和雨。', '陆游', '卜算子·咏梅', '宋', '冬'],
+  ['青山依旧在，几度夕阳红。', '杨慎', '临江仙', '明', '抒怀'],
+  ['白发渔樵江渚上，惯看秋月春风。', '杨慎', '临江仙', '明', '抒怀'],
+  // ---- 元明清补 ----
+  ['孤村落日残霞，轻烟老树寒鸦，一点飞鸿影下。', '白朴', '天净沙·秋', '元', '秋'],
+  ['一声梧叶一声秋，一点芭蕉一点愁。', '徐再思', '水仙子·夜雨', '元', '秋'],
+  ['别人笑我太疯癫，我笑他人看不穿。', '唐寅', '桃花庵歌', '明', '抒怀'],
+  ['但愿苍生俱饱暖，不辞辛苦出山林。', '于谦', '咏煤炭', '明', '励志'],
+  ['今日复今日，今日何其少！', '文嘉', '今日歌', '明', '时间'],
+  ['些小吾曹州县吏，一枝一叶总关情。', '郑燮', '潍县署中画竹', '清', '爱国'],
+  ['似此星辰非昨夜，为谁风露立中宵。', '黄景仁', '绮怀', '清', '爱情'],
+  ['世事洞明皆学问，人情练达即文章。', '曹雪芹', '红楼梦', '清', '读书'],
+  ['好风凭借力，送我上青云。', '曹雪芹', '红楼梦', '清', '励志'],
+  ['花谢花飞花满天，红消香断有谁怜。', '曹雪芹', '红楼梦', '清', '爱情'],
+  // ---- 近现代补 ----
+  ['血沃中原肥劲草，寒凝大地发春华。', '鲁迅', '无题', '近现代', '爱国'],
+  ['独立寒秋，湘江北去，橘子洲头。', '毛泽东', '沁园春·长沙', '近现代', '秋'],
+  ['问苍茫大地，谁主沉浮？', '毛泽东', '沁园春·长沙', '近现代', '抒怀'],
+  ['恰同学少年，风华正茂。', '毛泽东', '沁园春·长沙', '近现代', '励志'],
+  ['书生意气，挥斥方遒。', '毛泽东', '沁园春·长沙', '近现代', '励志'],
+  ['到中流击水，浪遏飞舟？', '毛泽东', '沁园春·长沙', '近现代', '励志'],
+  ['萧瑟秋风今又是，换了人间。', '毛泽东', '浪淘沙·北戴河', '近现代', '抒怀'],
+  ['中华儿女多奇志，不爱红装爱武装。', '毛泽东', '为女民兵题照', '近现代', '励志'],
+  ['人生易老天难老，岁岁重阳。', '毛泽东', '采桑子·重阳', '近现代', '时间'],
+  ['战地黄花分外香。', '毛泽东', '采桑子·重阳', '近现代', '秋'],
+  ['不到长城非好汉。', '毛泽东', '清平乐·六盘山', '近现代', '励志'],
+  ['大雪压青松，青松挺且直。', '陈毅', '青松', '近现代', '励志'],
+  ['有的人活着，他已经死了；有的人死了，他还活着。', '臧克家', '有的人', '近现代', '哲理'],
+  ['你站在桥上看风景，看风景的人在楼上看你。', '卞之琳', '断章', '近现代', '哲理'],
+  ['没有比脚更长的路，没有比人更高的山。', '汪国真', '山高路远', '近现代', '励志'],
+  ['如何让你遇见我，在我最美丽的时刻。', '席慕蓉', '一棵开花的树', '近现代', '爱情'],
+  ['当蜘蛛网无情地查封了我的炉台，我依然固执地铺平失望的灰烬，用美丽的雪花写下：相信未来。', '食指', '相信未来', '近现代', '励志'],
+  ['长亭外，古道边，芳草碧连天。', '李叔同', '送别', '近现代', '送别'],
+  ['从前的日色变得慢，车、马、邮件都慢，一生只够爱一个人。', '木心', '从前慢', '近现代', '爱情'],
+  ['我说你是人间的四月天。', '林徽因', '你是人间的四月天', '近现代', '爱情'],
+  ['最是那一低头的温柔，像一朵水莲花不胜凉风的娇羞。', '徐志摩', '沙扬娜拉', '近现代', '爱情'],
+  ['即使翅膀断了，心也要飞翔。', '张海迪', '语录', '近现代', '励志'],
+  ['生活不能等待别人来安排，要自己去争取和奋斗。', '路遥', '平凡的世界', '近现代', '励志'],
+  // ---- 外国补 ----
+  ['如能善于利用，生命乃悠长。', '塞涅卡', '语录', '外国', '时间'],
+  ['读书使人充实，讨论使人机智，笔记使人准确。', '培根', '语录', '外国', '读书'],
+  ['生存还是毁灭，这是一个值得考虑的问题。', '莎士比亚', '哈姆雷特', '外国', '哲理'],
+  ['我头上的星空和心中的道德法则。', '康德', '语录', '外国', '哲理'],
+  ['冬天来了，春天还会远吗？', '雪莱', '西风颂', '外国', '励志'],
+  ['想象力比知识更重要。', '爱因斯坦', '语录', '外国', '哲理'],
+  ['如果你因失去了太阳而流泪，那么你也将失去群星了。', '泰戈尔', '飞鸟集', '外国', '哲理'],
+  ['生命的用途并不在长短而在我们怎样利用它。', '蒙田', '语录', '外国', '时间'],
+  ['人生的光荣，不在于永不言败，而在于能够屡扑屡起。', '拿破仑', '语录', '外国', '励志'],
+  ['不要魂不守舍，不要匆忙急躁。', '陀思妥耶夫斯基', '语录', '外国', '哲理'],
+  ['天才，就是百分之一的灵感，百分之九十九的汗水。', '爱迪生', '语录', '外国', '励志'],
+  ['认识自己的无知就是最大的智慧。', '苏格拉底', '语录', '外国', '哲理'],
+  ['人不是为失败而生的。', '海明威', '老人与海', '外国', '励志'],
+  ['一个人可以被毁灭，但不能被打败。', '海明威', '老人与海', '外国', '励志'],
+  ['世界上只有一种真正的英雄主义，那就是认清生活的真相后依然热爱生活。', '罗曼·罗兰', '米开朗琪罗传', '外国', '哲理'],
+  ['让我们尽情地去生活，不管生活是怎样的。', '契诃夫', '语录', '外国', '哲理'],
+  ['谁虚度年华，青春就要褪色。', '雨果', '语录', '外国', '时间'],
+  // ================= 扩充批次五（收官） =================
+  ['仰天大笑出门去，我辈岂是蓬蒿人。', '李白', '南陵别儿童入京', '唐', '励志'],
+  ['五花马，千金裘，呼儿将出换美酒。', '李白', '将进酒', '唐', '抒怀'],
+  ['一枝红艳露凝香，云雨巫山枉断肠。', '李白', '清平调', '唐', '爱情'],
+  ['吾爱孟夫子，风流天下闻。', '李白', '赠孟浩然', '唐', '友情'],
+  ['此地一为别，孤蓬万里征。', '李白', '送友人', '唐', '送别'],
+  ['挥手自兹去，萧萧班马鸣。', '李白', '送友人', '唐', '送别'],
+  ['且放白鹿青崖间，须行即骑访名山。', '李白', '梦游天姥吟留别', '唐', '抒怀'],
+  ['痛饮狂歌空度日，飞扬跋扈为谁雄。', '杜甫', '赠李白', '唐', '友情'],
+  ['一片花飞减却春，风飘万点正愁人。', '杜甫', '曲江', '唐', '春'],
+  ['酒债寻常行处有，人生七十古来稀。', '杜甫', '曲江', '唐', '抒怀'],
+  ['绝代有佳人，幽居在空谷。', '杜甫', '佳人', '唐', '抒怀'],
+  ['独出前门望野田，月明荞麦花如雪。', '白居易', '村夜', '唐', '月夜'],
+  ['北风卷地白草折，胡天八月即飞雪。', '岑参', '白雪歌送武判官归京', '唐', '冬'],
+  ['新丰美酒斗十千，咸阳游侠多少年。', '王维', '少年行', '唐', '抒怀'],
+  ['隐隐飞桥隔野烟，石矶西畔问渔船。', '张旭', '桃花溪', '唐', '写景'],
+  ['冰簟银床梦不成，碧天如水夜云轻。', '温庭筠', '瑶瑟怨', '唐', '月夜'],
+  ['青女素娥俱耐冷，月中霜里斗婵娟。', '李商隐', '霜月', '唐', '月夜'],
+  ['垆边人似月，皓腕凝霜雪。', '韦庄', '菩萨蛮', '唐', '写景'],
+  ['春日游，杏花吹满头。', '韦庄', '思帝乡', '唐', '爱情'],
+  ['风乍起，吹皱一池春水。', '冯延巳', '谒金门', '唐', '春'],
+  ['春日宴，绿酒一杯歌一遍。', '冯延巳', '长命女', '唐', '春'],
+  ['一愿郎君千岁，二愿妾身常健。', '冯延巳', '长命女', '唐', '爱情'],
+  ['梦后楼台高锁，酒醒帘幕低垂。', '晏几道', '临江仙', '宋', '抒怀'],
+  ['记得小蘋初见，两重心字罗衣。', '晏几道', '临江仙', '宋', '爱情'],
+  ['彩袖殷勤捧玉钟，当年拚却醉颜红。', '晏几道', '鹧鸪天', '宋', '爱情'],
+  ['舞低杨柳楼心月，歌尽桃花扇底风。', '晏几道', '鹧鸪天', '宋', '爱情'],
+  ['伤高怀远几时穷，无物似情浓。', '张先', '一丛花令', '宋', '爱情'],
+  ['门掩黄昏，无计留春住。', '欧阳修', '蝶恋花', '宋', '春'],
+  ['六朝旧事随流水，但寒烟衰草凝绿。', '王安石', '桂枝香', '宋', '哲理'],
+  ['明月如霜，好风如水，清景无限。', '苏轼', '永遇乐', '宋', '月夜'],
+  ['雪沫乳花浮午盏，蓼茸蒿笋试春盘。', '苏轼', '浣溪沙', '宋', '春'],
+  ['当年不肯嫁春风，无端却被秋风误。', '贺铸', '芳心苦', '宋', '秋'],
+  ['昨夜雨疏风骤，浓睡不消残酒。', '李清照', '如梦令', '宋', '春'],
+  ['佳节又重阳，玉枕纱厨，半夜凉初透。', '李清照', '醉花阴', '宋', '秋'],
+  ['连雨不知春去，一晴方觉夏深。', '范成大', '喜晴', '宋', '夏'],
+  ['一片春愁待酒浇。', '蒋捷', '一剪梅·舟过吴江', '宋', '春'],
+  ['风又飘飘，雨又萧萧。', '蒋捷', '一剪梅·舟过吴江', '宋', '春'],
+  ['何日归家洗客袍？', '蒋捷', '一剪梅·舟过吴江', '宋', '思乡'],
+  ['几回回梦里回延安，双手搂定宝塔山。', '贺敬之', '回延安', '近现代', '思乡'],
+  ['侠之大者，为国为民。', '金庸', '射雕英雄传', '近现代', '爱国'],
+  ['幸福的家庭都是相似的，不幸的家庭各有各的不幸。', '列夫·托尔斯泰', '安娜·卡列尼娜', '外国', '哲理'],
+  ['让暴风雨来得更猛烈些吧！', '高尔基', '海燕', '外国', '励志'],
+  ['在苍茫的大海上，狂风卷集着乌云。', '高尔基', '海燕', '外国', '抒怀'],
+  ['生命诚可贵，爱情价更高。若为自由故，二者皆可抛。', '裴多菲', '自由与爱情', '外国', '励志'],
+  ['只有用心才能看得清，实质性的东西用眼睛是看不见的。', '圣埃克苏佩里', '小王子', '外国', '哲理'],
+  ['所有的大人都曾经是小孩，虽然只有少数的人记得。', '圣埃克苏佩里', '小王子', '外国', '哲理'],
+  ['我步入丛林，因为我希望生活得有意义。', '梭罗', '瓦尔登湖', '外国', '哲理'],
+  ['知识是一种快乐，而好奇则是知识的萌芽。', '培根', '语录', '外国', '读书'],
+  ['除了无知，没有什么是不可以改变的。', '苏格拉底', '语录', '外国', '哲理'],
+  ['青年时代太放纵就会失去心灵的滋润，太节制就会变成死脑筋。', '圣桑塔耶纳', '语录', '外国', '哲理'],
+  ['我要反复思考琢磨，非学好不可。', '福泽谕吉', '语录', '外国', '读书'],
+  ['老骥伏枥，志在千里。', '曹操', '龟虽寿', '汉', '励志'],
+  ['捐躯赴国难，视死忽如归。', '曹植', '白马篇', '三国', '爱国'],
+  ['人固有一死，或重于泰山，或轻于鸿毛。', '司马迁', '报任安书', '汉', '哲理'],
+  ['精诚所至，金石为开。', '《后汉书》', '广陵思王荆传', '汉', '励志'],
+  ['贫贱之知不可忘，糟糠之妻不下堂。', '《后汉书》', '宋弘传', '汉', '爱情'],
+  ['志士不饮盗泉之水，廉者不受嗟来之食。', '《后汉书》', '列女传', '汉', '励志'],
+  ['失之东隅，收之桑榆。', '《后汉书》', '冯异传', '汉', '哲理'],
+  ['疾风知劲草，岁寒见后凋。', '《后汉书》', '王霸传', '汉', '励志'],
+  ['不入虎穴，焉得虎子。', '《后汉书》', '班超传', '汉', '励志'],
+  ['水至清则无鱼，人至察则无徒。', '《大戴礼记》', '子张问入官', '先秦', '哲理'],
+  ['君子坦荡荡，小人长戚戚。', '《论语》', '述而', '先秦', '哲理'],
+  ['往者不可谏，来者犹可追。', '《论语》', '微子', '先秦', '时间'],
+  ['鸟之将死，其鸣也哀；人之将死，其言也善。', '《论语》', '泰伯', '先秦', '哲理'],
+  ['逝者如斯夫，不舍昼夜。', '《论语》', '子罕', '先秦', '时间'],
+  ['三军可夺帅也，匹夫不可夺志也。', '《论语》', '子罕', '先秦', '励志'],
+  ['知者不惑，仁者不忧，勇者不惧。', '《论语》', '子罕', '先秦', '哲理'],
+  ['君子和而不同，小人同而不和。', '《论语》', '子路', '先秦', '哲理'],
+  ['巧言令色，鲜矣仁。', '《论语》', '学而', '先秦', '哲理'],
+  ['君子喻于义，小人喻于利。', '《论语》', '里仁', '先秦', '哲理'],
+  ['见义不为，无勇也。', '《论语》', '为政', '先秦', '哲理'],
+  ['道不同，不相为谋。', '《论语》', '卫灵公', '先秦', '哲理'],
+  ['既来之，则安之。', '《论语》', '季氏', '先秦', '哲理'],
+  ['小不忍则乱大谋。', '《论语》', '卫灵公', '先秦', '哲理'],
+  ['人无远虑，必有近忧。', '《论语》', '卫灵公', '先秦', '哲理'],
+  ['不以规矩，不能成方圆。', '《孟子》', '离娄上', '先秦', '哲理'],
+  ['生于忧患，死于安乐。', '《孟子》', '告子下', '先秦', '哲理'],
+  ['富贵不能淫，贫贱不能移，威武不能屈。', '《孟子》', '滕文公下', '先秦', '励志'],
+  ['老吾老，以及人之老；幼吾幼，以及人之幼。', '《孟子》', '梁惠王上', '先秦', '哲理'],
+  ['天时不如地利，地利不如人和。', '《孟子》', '公孙丑下', '先秦', '哲理'],
+  ['得道者多助，失道者寡助。', '《孟子》', '公孙丑下', '先秦', '哲理'],
+  ['穷则独善其身，达则兼济天下。', '《孟子》', '尽心上', '先秦', '哲理'],
+  ['尽信书，则不如无书。', '《孟子》', '尽心下', '先秦', '读书'],
+  ['民为贵，社稷次之，君为轻。', '《孟子》', '尽心下', '先秦', '哲理'],
+  ['君子莫大乎与人为善。', '《孟子》', '公孙丑上', '先秦', '哲理'],
+  ['爱人者，人恒爱之；敬人者，人恒敬之。', '《孟子》', '离娄下', '先秦', '哲理'],
+  ['上善若水，水善利万物而不争。', '老子', '道德经', '先秦', '哲理'],
+  ['大器晚成，大音希声。', '老子', '道德经', '先秦', '哲理'],
+  ['合抱之木，生于毫末；九层之台，起于累土。', '老子', '道德经', '先秦', '哲理'],
+  ['信言不美，美言不信。', '老子', '道德经', '先秦', '哲理'],
+  ['知足者富，强行者有志。', '老子', '道德经', '先秦', '哲理'],
+  ['君子藏器于身，待时而动。', '《周易》', '系辞下', '先秦', '哲理'],
+  ['仁者见仁，智者见智。', '《周易》', '系辞上', '先秦', '哲理'],
+  ['物以类聚，人以群分。', '《周易》', '系辞上', '先秦', '哲理'],
+  ['差之毫厘，谬以千里。', '《礼记》', '经解', '先秦', '哲理'],
+  ['独学而无友，则孤陋而寡闻。', '《礼记》', '学记', '先秦', '读书'],
+  ['凡事预则立，不预则废。', '《礼记》', '中庸', '先秦', '哲理'],
+  ['博学而笃志，切问而近思。', '《论语》', '子张', '先秦', '读书'],
+  ['亡羊补牢，犹未迟也。', '《战国策》', '楚策四', '先秦', '哲理'],
+  ['前事不忘，后事之师。', '《战国策》', '赵策一', '先秦', '哲理'],
+  ['士为知己者死，女为悦己者容。', '《战国策》', '赵策一', '先秦', '友情'],
+  ['风萧萧兮易水寒，壮士一去兮不复还。', '《战国策》', '燕策三', '先秦', '抒怀'],
+  ['鹬蚌相争，渔翁得利。', '《战国策》', '燕策二', '先秦', '哲理'],
+  ['千里之堤，溃于蚁穴。', '韩非子', '喻老', '先秦', '哲理'],
+  ['胜而不骄，败而不怨。', '商君书', '战法', '先秦', '哲理'],
+  ['智者千虑，必有一失；愚者千虑，必有一得。', '《史记》', '淮阴侯列传', '汉', '哲理'],
+  ['良药苦口利于病，忠言逆耳利于行。', '《史记》', '留侯世家', '汉', '哲理'],
+  ['燕雀安知鸿鹄之志哉！', '《史记》', '陈涉世家', '汉', '励志'],
+  ['王侯将相宁有种乎！', '《史记》', '陈涉世家', '汉', '励志'],
+  ['项庄舞剑，意在沛公。', '《史记》', '项羽本纪', '汉', '哲理'],
+  ['不鸣则已，一鸣惊人。', '《史记》', '滑稽列传', '汉', '励志'],
+  ['士为知己者用，女为说己者容。', '司马迁', '报任安书', '汉', '友情'],
+  ['绳锯木断，水滴石穿。', '罗大经', '鹤林玉露', '宋', '励志'],
+  ['近水楼台先得月，向阳花木易为春。', '苏麟', '断句', '宋', '哲理'],
+  ['春江水暖鸭先知。', '苏轼', '惠崇春江晚景', '宋', '春'],
+  ['山高月小，水落石出。', '苏轼', '后赤壁赋', '宋', '山水'],
+  ['清风明月本无价，近水远山皆有情。', '梁章钜', '沧浪亭联', '清', '哲理'],
+  ['海纳百川，有容乃大；壁立千仞，无欲则刚。', '林则徐', '自题联', '清', '哲理'],
+  ['苟利国家生死以，岂因祸福避趋之。', '林则徐', '赴戍登程口占示家人', '清', '爱国'],
+  ['我劝天公重抖擞，不拘一格降人才。', '龚自珍', '己亥杂诗', '清', '爱国'],
+  ['落红不是无情物，化作春泥更护花。', '龚自珍', '己亥杂诗', '清', '励志'],
+  ['九州生气恃风雷，万马齐喑究可哀。', '龚自珍', '己亥杂诗', '清', '爱国'],
+  ['一寸丹心图报国，两行清泪为思亲。', '于谦', '立春日感怀', '明', '爱国'],
+  ['粉骨碎身全不怕，要留清白在人间。', '于谦', '石灰吟', '明', '励志'],
+  ['清风两袖朝天去，免得闾阎话短长。', '于谦', '入京', '明', '励志'],
+  ['咬定青山不放松，立根原在破岩中。', '郑燮', '竹石', '清', '励志'],
+  ['千磨万击还坚劲，任尔东西南北风。', '郑燮', '竹石', '清', '励志'],
+  ['删繁就简三秋树，领异标新二月花。', '郑燮', '题书斋联', '清', '哲理'],
+  ['删繁就简，领异标新。', '郑燮', '题书斋联', '清', '哲理'],
+  ['我劝天公重抖擞。', '龚自珍', '己亥杂诗', '清', '爱国'],
+  ['一花独放不是春，百花齐放春满园。', '《古今贤文》', '古今贤文', '明', '哲理'],
+  ['路遥知马力，日久见人心。', '《增广贤文》', '增广贤文', '明', '哲理'],
+  ['良药苦口利于病，忠言逆耳利于行。', '《资治通鉴》', '资治通鉴', '宋', '哲理'],
+  ['兼听则明，偏信则暗。', '《资治通鉴》', '资治通鉴', '宋', '哲理'],
+  ['才者，德之资也；德者，才之帅也。', '司马光', '资治通鉴', '宋', '哲理'],
+  ['由俭入奢易，由奢入俭难。', '司马光', '训俭示康', '宋', '哲理'],
+  ['书到用时方恨少，事非经过不知难。', '陆游', '警世贤文', '宋', '读书'],
+  ['天下事有难易乎？为之，则难者亦易矣。', '彭端淑', '为学', '清', '哲理'],
+  ['天下兴亡，匹夫有责。', '顾炎武', '日知录', '清', '爱国'],
+  ['风声雨声读书声，声声入耳。', '顾宪成', '东林书院联', '明', '读书'],
+  ['海纳百川，有容乃大。', '林则徐', '自题联', '清', '哲理'],
+  ['会当凌绝顶，一览众山小。', '杜甫', '望岳', '唐', '励志'],
+  ['白日依山尽，黄河入海流。', '王之涣', '登鹳雀楼', '唐', '山水'],
+  ['欲穷千里目，更上一层楼。', '王之涣', '登鹳雀楼', '唐', '励志'],
+  ['春种一粒粟，秋收万颗子。', '李绅', '悯农', '唐', '田园'],
+  ['锄禾日当午，汗滴禾下土。', '李绅', '悯农', '唐', '田园'],
+  ['谁知盘中餐，粒粒皆辛苦。', '李绅', '悯农', '唐', '田园'],
+  ['采菊东篱下，悠然见南山。', '陶渊明', '饮酒·其五', '晋', '田园'],
+  ['此中有真意，欲辨已忘言。', '陶渊明', '饮酒·其五', '晋', '哲理'],
+  ['久在樊笼里，复得返自然。', '陶渊明', '归园田居', '晋', '田园'],
+  ['不戚戚于贫贱，不汲汲于富贵。', '陶渊明', '五柳先生传', '晋', '哲理'],
+  // ---- 补足到千条 ----
+  ['阁中帝子今何在？槛外长江空自流。', '王勃', '滕王阁诗', '唐', '哲理'],
+  ['凤凰台上凤凰游，凤去台空江自流。', '李白', '登金陵凤凰台', '唐', '抒怀'],
+  ['我本楚狂人，凤歌笑孔丘。', '李白', '庐山谣寄卢侍御虚舟', '唐', '抒怀'],
+  ['水流花谢两无情，送尽东风过楚城。', '崔涂', '春夕', '唐', '春'],
+  ['槲叶落山路，枳花明驿墙。', '温庭筠', '商山早行', '唐', '写景'],
+  ['可怜夜半虚前席，不问苍生问鬼神。', '李商隐', '贾生', '唐', '哲理'],
+  ['黑云翻墨未遮山，白雨跳珠乱入船。', '苏轼', '六月二十七日望湖楼醉书', '宋', '夏'],
+  ['一夕轻雷落万丝，霁光浮瓦碧参差。', '秦观', '春日', '宋', '春'],
+  ['旧时茅店社林边，路转溪桥忽见。', '辛弃疾', '西江月·夜行黄沙道中', '宋', '田园'],
+  ['轻舟短棹西湖好，绿水逶迤。', '欧阳修', '采桑子', '宋', '山水'],
+  ['花褪残红青杏小，燕子飞时，绿水人家绕。', '苏轼', '蝶恋花·春景', '宋', '春'],
+  ['枝上柳绵吹又少，天涯何处无芳草。', '苏轼', '蝶恋花·春景', '宋', '春'],
+  ['笑渐不闻声渐悄，多情却被无情恼。', '苏轼', '蝶恋花·春景', '宋', '爱情'],
+  ['便做春江都是泪，流不尽，许多愁。', '秦观', '江城子', '宋', '抒怀'],
+  ['想当年，金戈铁马，气吞万里如虎。', '辛弃疾', '永遇乐·京口北固亭怀古', '宋', '爱国'],
+  ['舞榭歌台，风流总被雨打风吹去。', '辛弃疾', '永遇乐·京口北固亭怀古', '宋', '抒怀'],
+  ['天凉好个秋。', '辛弃疾', '丑奴儿·书博山道中壁', '宋', '抒怀'],
+  ['少年听雨歌楼上，红烛昏罗帐。', '蒋捷', '虞美人·听雨', '宋', '抒怀'],
+  ['而今听雨僧庐下，鬓已星星也。', '蒋捷', '虞美人·听雨', '宋', '时间'],
+  ['梅子留酸软齿牙，芭蕉分绿与窗纱。', '杨万里', '闲居初夏午睡起', '宋', '夏'],
+];
+/* 去重保险：万一录入重复句子，只保留最早出现的一条 */
+(function dedupeQuotes() {
+  const seen = new Set();
+  for (let i = QUOTES.length - 1; i >= 0; i--) {
+    if (seen.has(QUOTES[i][0])) QUOTES.splice(i, 1);
+    else seen.add(QUOTES[i][0]);
+  }
+})();
+/* ---------- 阅读：数据与逻辑 ---------- */
+const READ_KEY = 'huajian_reading';
+
+function loadReading() {
+  try {
+    const r = localStorage.getItem(READ_KEY);
+    if (r) {
+      const o = JSON.parse(r);
+      return {
+        fav: Array.isArray(o.fav) ? o.fav : [],
+        userQuotes: Array.isArray(o.userQuotes) ? o.userQuotes : [],
+        books: Array.isArray(o.books) ? o.books : [],
+        materials: Array.isArray(o.materials) ? o.materials : [],
+      };
+    }
+  } catch (e) { }
+  return { fav: [], userQuotes: [], books: [], materials: [] };
+}
+let reading = loadReading();
+function saveReading() { localStorage.setItem(READ_KEY, JSON.stringify(reading)); }
+
+let dailyIdx = null;
+let qTheme = 'all', qDyn = 'all', quotePage = 0;
+
+function allQuotes() {
+  return QUOTES.concat(reading.userQuotes.map((u) => [u.t, u.a || '我', u.w || '手记', u.d || '我添加', u.th || '我的']));
+}
+function isFav(q) { return reading.fav.some((f) => f.tid === q[0]); }
+
+function currentDaily() {
+  const pool = allQuotes();
+  if (!pool.length) return null;
+  const now = new Date();
+  const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  dailyIdx = doy % pool.length;
+  return pool[dailyIdx];
+}
+
+function renderDailyQuote() {
+  const q = currentDaily();
+  if (!q) return;
+  $('dailyQuote').textContent = q[0];
+  $('dailyFrom').textContent = '—— ' + q[1] + '《' + q[2] + '》 · ' + q[3];
+  $('homeQuoteText').textContent = q[0];
+  $('homeQuoteFrom').textContent = '—— ' + q[1] + '《' + q[2] + '》 · ' + q[3];
+  $('qFavBtn').textContent = isFav(q) ? '❤ 已收藏' : '❤ 收藏';
+  renderReadStats();
+}
+
+function toggleFavCurrent() {
+  const q = currentDaily();
+  if (!q) return;
+  if (isFav(q)) {
+    reading.fav = reading.fav.filter((f) => f.tid !== q[0]);
+    showToast('已取消收藏');
+  } else {
+    reading.fav.push({ tid: q[0], note: '' });
+    showToast('已收藏！可在名句库"只看收藏"里复习 ❤');
+  }
+  saveReading();
+  renderDailyQuote();
+  renderQuoteList(false);
+}
+
+/* 名句库浏览 */
+function quoteFiltered() {
+  const kw = $('qSearch').value.trim();
+  return allQuotes().filter((q) =>
+    (qTheme === 'all' || qTheme === q[4]) &&
+    (qDyn === 'all' || q[3] === qDyn) &&
+    (!kw || q[0].includes(kw) || q[1].includes(kw) || q[2].includes(kw))
+  );
+}
+
+function renderQuoteChips() {
+  const themes = [...new Set(allQuotes().map((q) => q[4]))];
+  const dyns = [...new Set(allQuotes().map((q) => q[3]))];
+  $('qThemeChips').innerHTML = [{ k: 'all', l: '全部主题' }, { k: '★收藏', l: '★ 只看收藏' }]
+    .concat(themes.map((t) => ({ k: t, l: t })))
+    .map((c) => '<button class="vchip' + (qTheme === c.k ? ' on' : '') + '" data-qth="' + esc(c.k) + '" type="button">' + c.l + '</button>').join('');
+  $('qDynChips').innerHTML = [{ k: 'all', l: '全部朝代' }].concat(dyns.map((t) => ({ k: t, l: t })))
+    .map((c) => '<button class="vchip' + (qDyn === c.k ? ' on' : '') + '" data-qdy="' + esc(c.k) + '" type="button">' + c.l + '</button>').join('');
+  const filtering = (qTheme !== 'all') || (qDyn !== 'all');
+  const open = !$('qFilters').hidden;
+  $('qFilterBtn').classList.toggle('on', filtering);
+  $('qFilterBtn').textContent = open
+    ? '🎛 收起筛选 ▲'
+    : (filtering
+      ? '🎛 筛选中（' + (qTheme === 'all' ? '' : qTheme) + (qTheme !== 'all' && qDyn !== 'all' ? ' · ' : '') + (qDyn === 'all' ? '' : qDyn) + '）▼'
+      : '🎛 筛选（主题 · 朝代）▼');
+}
+
+function renderQuoteList(reset) {
+  if (reset) quotePage = 0;
+  renderQuoteChips();
+  const favOnly = qTheme === '★收藏';
+  let list = favOnly ? allQuotes().filter((q) => isFav(q)) : quoteFiltered();
+  if (favOnly && qDyn !== 'all') list = list.filter((q) => q[3] === qDyn);
+  const show = list.slice(0, (quotePage + 1) * 30);
+  $('quoteCount').textContent = '内置 ' + QUOTES.length + ' 条 · 我添加 ' + reading.userQuotes.length + ' 条' + (favOnly ? ' · 收藏 ' + list.length + ' 条' : '');
+  $('quoteList').innerHTML = show.map((q) => {
+    const fav = isFav(q);
+    const note = (reading.fav.find((f) => f.tid === q[0]) || {}).note || '';
+    return '<div class="tl-item">' +
+      '<div class="tl-body"><div class="tl-name" style="font-family:KaiTi,serif;">' + esc(q[0]) + '</div>' +
+      '<div class="tl-meta">—— ' + esc(q[1]) + '《' + esc(q[2] + '》 · ' + q[3] + ' · ' + q[4]) +
+      (note ? '<br>📝 ' + esc(note) : '') + '</div></div>' +
+      '<div class="tl-ops">' +
+      '<button class="op ' + (fav ? 'op-undo' : 'op-done') + '" data-qfav="' + esc(q[0]) + '" title="收藏">' + (fav ? '❤' : '🤍') + '</button>' +
+      (fav ? '<button class="op op-undo" data-qnote="' + esc(q[0]) + '" title="写笔记">📝</button>' : '') +
+      '</div></div>';
+  }).join('');
+  $('qMore').style.display = list.length > show.length ? 'block' : 'none';
+}
+
+function toggleFavByTid(tid) {
+  const i = reading.fav.findIndex((f) => f.tid === tid);
+  if (i >= 0) { reading.fav.splice(i, 1); showToast('已取消收藏'); }
+  else { reading.fav.push({ tid, note: '' }); showToast('已收藏 ❤'); }
+  saveReading();
+  renderDailyQuote();
+  renderQuoteList(false);
+}
+
+let noteEditTid = null;
+function openNoteEdit(tid) {
+  noteEditTid = tid;
+  const f = reading.fav.find((x) => x.tid === tid) || { note: '' };
+  $('noteText').value = f.note || '';
+  $('noteOverlay').hidden = false;
+}
+
+/* 书目 */
+function renderBooks() {
+  if (!reading.books.length) { $('bookList').innerHTML = '<p class="empty-tip">还没有在读书目，下面添加一本吧 📚</p>'; return; }
+  $('bookList').innerHTML = reading.books.map((b) => {
+    const pct = Math.min(100, Math.round((b.current || 0) / (b.total || 1) * 100));
+    return '<div class="tl-item" style="flex-wrap:wrap;">' +
+      '<div class="tl-body" style="min-width:150px;flex:1;">' +
+      '<div class="tl-name">《' + esc(b.title) + '》' + (b.author ? ' · ' + esc(b.author) : '') + (b.done ? ' <span class="rep-badge">已读完 ✓</span>' : '') + '</div>' +
+      '<div class="tl-meta">第 ' + (b.current || 0) + ' / ' + b.total + ' 页</div>' +
+      '<div class="prog" style="margin-top:4px;"><i style="width:' + pct + '%"></i></div>' +
+      '</div>' +
+      '<div class="tl-ops" style="flex-wrap:wrap;">' +
+      '<input type="number" min="1" placeholder="页" style="width:56px;" data-pg="' + b.id + '">' +
+      '<input type="number" min="1" placeholder="分钟" style="width:74px;" data-min="' + b.id + '">' +
+      '<button class="op op-done" data-bklog="' + b.id + '">记录</button>' +
+      '<button class="op op-del" data-bkdel="' + b.id + '" title="删除">✕</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function addBook() {
+  const title = $('bkTitle').value.trim();
+  const total = parseInt($('bkTotal').value, 10);
+  if (!title) { showToast('先写书名哦～'); return; }
+  if (isNaN(total) || total < 1) { showToast('总页数填个数字吧～'); return; }
+  reading.books.push({ id: uid(), title, author: $('bkAuthor').value.trim(), total, current: 0, done: false, doneDate: '', log: [] });
+  saveReading();
+  $('bkTitle').value = ''; $('bkAuthor').value = ''; $('bkTotal').value = '';
+  renderBooks(); renderReadStats();
+  showToast('已添加《' + title + '》');
+}
+
+function logReading(id) {
+  const b = reading.books.find((x) => x.id === id);
+  if (!b) return;
+  const pgEl = document.querySelector('[data-pg="' + id + '"]');
+  const minEl = document.querySelector('[data-min="' + id + '"]');
+  const pages = parseInt(pgEl && pgEl.value, 10) || 0;
+  const mins = parseInt(minEl && minEl.value, 10) || 0;
+  if (!pages && !mins) { showToast('填一下读了几页或几分钟～'); return; }
+  b.current = Math.min(b.total, (b.current || 0) + pages);
+  b.log.push({ date: todayStr(), min: mins, pages });
+  if (!b.done && b.current >= b.total) {
+    b.done = true; b.doneDate = todayStr();
+    showToast('🎉 恭喜读完《' + b.title + '》！');
+  } else {
+    showToast('已记录：+' + pages + ' 页 ' + mins + ' 分钟');
+  }
+  if (pgEl) pgEl.value = '';
+  if (minEl) minEl.value = '';
+  saveReading();
+  renderBooks(); renderReadStats();
+}
+
+/* 阅读统计 */
+function renderReadStats() {
+  const Y = new Date().getFullYear();
+  const M = String(new Date().getMonth() + 1).padStart(2, '0');
+  const doneBooks = reading.books.filter((b) => b.done);
+  const yearBooks = doneBooks.filter((b) => (b.doneDate || '').slice(0, 4) === String(Y));
+  let monthMin = 0;
+  for (const b of reading.books) for (const l of b.log) if ((l.date || '').slice(0, 7) === (Y + '-' + M)) monthMin += l.min || 0;
+  $('rsBooks').textContent = doneBooks.length;
+  $('rsYear').textContent = yearBooks.length;
+  $('rsMonth').textContent = monthMin;
+  $('rsFav').textContent = reading.fav.length;
+}
+
+/* 我添加的名句 */
+function addUserQuote() {
+  const t = $('uqText').value.trim();
+  const from = $('uqFrom').value.trim() || '我';
+  if (!t) { showToast('先写名句内容哦～'); return; }
+  const a = from.includes('《') ? from.slice(0, from.indexOf('《')) : from;
+  const w = from.includes('《') ? from.slice(from.indexOf('《') + 1, -1) : '';
+  reading.userQuotes.push({ id: uid(), t, a, w, d: '我添加', th: '我的' });
+  saveReading();
+  $('uqText').value = ''; $('uqFrom').value = '';
+  renderUserQuotes(); renderDailyQuote(); renderQuoteList(true);
+  showToast('已添加到名句库 ✍');
+}
+
+function renderUserQuotes() {
+  if (!reading.userQuotes.length) { $('uqList').innerHTML = ''; return; }
+  $('uqList').innerHTML = reading.userQuotes.map((q) =>
+    '<div class="tl-item"><div class="tl-body"><div class="tl-name" style="font-family:KaiTi,serif;">' + esc(q.t) + '</div>' +
+    '<div class="tl-meta">—— ' + esc(q.a) + (q.w ? '《' + esc(q.w) + '》' : '') + '</div></div>' +
+    '<div class="tl-ops"><button class="op op-del" data-uqdel="' + q.id + '">✕</button></div></div>'
+  ).join('');
+}
+
+/* 素材积累本 */
+function addMaterial() {
+  const text = $('mtText').value.trim();
+  if (!text) { showToast('先写素材内容哦～'); return; }
+  reading.materials.unshift({ id: uid(), type: $('mtType').value, text, date: todayStr() });
+  saveReading();
+  $('mtText').value = '';
+  renderMaterials();
+  showToast('已记入素材本 ✨');
+}
+
+function renderMaterials() {
+  if (!reading.materials.length) { $('mtList').innerHTML = '<p class="empty-tip">成语典故、写作素材、课堂灵感……想到什么记什么</p>'; return; }
+  $('mtList').innerHTML = reading.materials.slice(0, 50).map((m) =>
+    '<div class="note-item"><span class="nd">' + esc(m.type) + '</span>' +
+    '<span class="nt">' + esc(m.text) + '</span>' +
+    '<button data-mtdel="' + m.id + '" style="background:none;color:var(--ink2);">✕</button></div>'
+  ).join('');
+}
+
+function renderReadAll() {
+  renderDailyQuote();
+  renderQuoteList(true);
+  renderBooks();
+  renderReadStats();
+  renderUserQuotes();
+  renderMaterials();
+}
+
+/* 阅读页事件 */
+$('qFavBtn').addEventListener('click', toggleFavCurrent);
+$('qSearch').addEventListener('input', () => renderQuoteList(true));
+$('qFilterBtn').addEventListener('click', () => {
+  const box = $('qFilters');
+  box.hidden = !box.hidden;
+  renderQuoteChips();   // 按钮文字统一在这里刷新（展开/收起与筛选中状态）
+});
+$('qThemeChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-qth]');
+  if (!b) return;
+  qTheme = (qTheme === b.dataset.qth) ? 'all' : b.dataset.qth;
+  renderQuoteList(true);
+});
+$('qDynChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-qdy]');
+  if (!b) return;
+  qDyn = (qDyn === b.dataset.qdy) ? 'all' : b.dataset.qdy;
+  renderQuoteList(true);
+});
+$('qMore').addEventListener('click', () => { quotePage += 1; renderQuoteList(false); });
+$('quoteList').addEventListener('click', (e) => {
+  const fav = e.target.closest('[data-qfav]');
+  if (fav) { toggleFavByTid(fav.dataset.qfav); return; }
+  const note = e.target.closest('[data-qnote]');
+  if (note) openNoteEdit(note.dataset.qnote);
+});
+$('uqAdd').addEventListener('click', addUserQuote);
+$('uqList').addEventListener('click', (e) => {
+  const d = e.target.closest('[data-uqdel]');
+  if (d) {
+    reading.userQuotes = reading.userQuotes.filter((q) => q.id !== d.dataset.uqdel);
+    saveReading(); renderUserQuotes(); renderQuoteList(true); renderDailyQuote();
+  }
+});
+$('bkAdd').addEventListener('click', addBook);
+$('bookList').addEventListener('click', (e) => {
+  const log = e.target.closest('[data-bklog]');
+  if (log) { logReading(log.dataset.bklog); return; }
+  const d = e.target.closest('[data-bkdel]');
+  if (d) {
+    const b = reading.books.find((x) => x.id === d.dataset.bkdel);
+    if (b && window.confirm('删除《' + b.title + '》的阅读记录吗？')) {
+      reading.books = reading.books.filter((x) => x.id !== d.dataset.bkdel);
+      saveReading(); renderBooks(); renderReadStats();
+    }
+  }
+});
+$('mtAdd').addEventListener('click', addMaterial);
+$('mtList').addEventListener('click', (e) => {
+  const d = e.target.closest('[data-mtdel]');
+  if (d) {
+    reading.materials = reading.materials.filter((m) => m.id !== d.dataset.mtdel);
+    saveReading(); renderMaterials();
+  }
+});
+$('noteSave').addEventListener('click', () => {
+  const f = reading.fav.find((x) => x.tid === noteEditTid);
+  if (f) { f.note = $('noteText').value.trim(); saveReading(); renderQuoteList(false); showToast('笔记已保存 📝'); }
+  $('noteOverlay').hidden = true;
+});
+$('noteClose').addEventListener('click', () => { $('noteOverlay').hidden = true; });
+$('homeQuoteCard').addEventListener('click', () => showPage('read'));
+
+/* 名句库折叠/展开 */
+$('libToggle').addEventListener('click', () => {
+  const body = $('libBody');
+  body.hidden = !body.hidden;
+  $('libToggle').textContent = body.hidden
+    ? '📖 打开名句库（1002 条可搜索） ▼'
+    : '📖 收起名句库 ▲';
+  if (!body.hidden) renderQuoteList(true);
+});
+
+/* =========================================================
+   阶段 4：健康板块（喝水 · 习惯 · 睡眠 · 趋势）
+   存储：huajian_health = {
+     waterGoal, water:{日期:杯数}, sleep:{日期:入睡档},
+     habits:[{id,icon,name}], habitLog:{日期:[习惯id]}
+   }
+   ========================================================= */
+const HEALTH_KEY = 'huajian_health';
+
+function loadHealth() {
+  const def = {
+    waterGoal: 8, water: {}, sleep: {},
+    habits: [
+      { id: 'h_sport', icon: '🚶', name: '运动 30 分钟' },
+      { id: 'h_sleep', icon: '😴', name: '早睡（23点前）' },
+    ],
+    habitLog: {},
+  };
+  try {
+    const r = localStorage.getItem(HEALTH_KEY);
+    if (r) {
+      const o = JSON.parse(r);
+      return {
+        waterGoal: Number(o.waterGoal) || 8,
+        water: o.water || {}, sleep: o.sleep || {},
+        habits: Array.isArray(o.habits) && o.habits.length ? o.habits : def.habits,
+        habitLog: o.habitLog || {},
+      };
+    }
+  } catch (e) { }
+  return def;
+}
+let health = loadHealth();
+function saveHealth() { localStorage.setItem(HEALTH_KEY, JSON.stringify(health)); }
+
+function addDaysStr7(off) { const d = new Date(); d.setDate(d.getDate() + off); return fmtD(d); }
+
+/* 喝水 */
+function waterAdd(n) {
+  const T = todayStr();
+  const cur = (health.water[T] || 0) + n;
+  health.water[T] = Math.max(0, cur);
+  saveHealth();
+  renderHealth();
+  if (n > 0) {
+    showToast(health.water[T] >= health.waterGoal
+      ? '🎉 今天喝水目标达成：' + health.water[T] + ' 杯！'
+      : '💧 已记录，今天 ' + health.water[T] + '/' + health.waterGoal + ' 杯');
+  }
+}
+
+/* 习惯 */
+function toggleHabit(id) {
+  const T = todayStr();
+  const list = health.habitLog[T] || [];
+  const i = list.indexOf(id);
+  if (i >= 0) list.splice(i, 1);
+  else { list.push(id); showToast('打卡成功，坚持就是胜利 ✅'); }
+  health.habitLog[T] = list;
+  saveHealth();
+  renderHealth();
+}
+
+function addHabit() {
+  const name = $('habitName').value.trim();
+  if (!name) { showToast('先写习惯名称哦～'); return; }
+  health.habits.push({ id: uid(), icon: '⭐', name });
+  saveHealth();
+  $('habitName').value = '';
+  renderHealth();
+  showToast('习惯已添加');
+}
+
+function delHabit(id) {
+  const h = health.habits.find((x) => x.id === id);
+  if (!h) return;
+  if (!window.confirm('删除习惯「' + h.name + '」吗？（历史打卡记录保留在统计里）')) return;
+  health.habits = health.habits.filter((x) => x.id !== id);
+  saveHealth();
+  renderHealth();
+}
+
+/* 渲染 */
+function renderHealth() {
+  const T = todayStr();
+  const now = health.water[T] || 0;
+  const goal = health.waterGoal;
+  $('waterNow').textContent = now;
+  $('waterGoalNum').textContent = goal;
+  $('ovWater').textContent = now;
+  $('ovWaterGoal').textContent = goal;
+  $('waterGoalLine').textContent = '目标 ' + goal + ' 杯';
+  $('waterProg').style.width = Math.min(100, Math.round(now / goal * 100)) + '%';
+
+  const todayList = health.habitLog[T] || [];
+  $('habitList').innerHTML = health.habits.map((h) =>
+    '<div class="habit-row"><span style="font-size:20px;">' + h.icon + '</span>' +
+    '<span class="hr-name">' + esc(h.name) + '</span>' +
+    '<button class="op op-del" data-hdel="' + h.id + '" title="删除习惯">✕</button>' +
+    '<button class="habit-check' + (todayList.includes(h.id) ? ' on' : '') + '" data-htoggle="' + h.id + '" title="打卡">' +
+    (todayList.includes(h.id) ? '✓' : '') + '</button></div>'
+  ).join('') || '<p class="empty-tip">还没有习惯，下面添加一个吧</p>';
+  $('habitTodayLine').textContent = '今天 ' + todayList.length + '/' + health.habits.length;
+
+  const sleepNow = health.sleep[T];
+  $('sleepLine').textContent = sleepNow ? ('昨晚：' + sleepNow) : '今天还没记录';
+  document.querySelectorAll('#sleepChips .vchip').forEach((b) => {
+    b.classList.toggle('on', b.dataset.sleep === sleepNow);
+  });
+
+  // 近7天柱状
+  let bars = '';
+  for (let i = 6; i >= 0; i--) {
+    const d = addDaysStr7(-i);
+    const v = health.water[d] || 0;
+    const pct = Math.min(100, Math.round(v / goal * 100));
+    const label = i === 0 ? '今天' : d.slice(8) + '日';
+    bars += '<div class="hw-col"><span class="hw-val">' + v + '</span>' +
+      '<div class="hw-bar" style="height:' + Math.max(4, pct) + '%;"></div>' +
+      '<span class="hw-day">' + label + '</span></div>';
+  }
+  $('waterBars').innerHTML = bars;
+
+  let weekHabit = 0;
+  for (let i = 0; i < 7; i++) weekHabit += (health.habitLog[addDaysStr7(-i)] || []).length;
+  $('habitWeekLine').textContent = '近 7 天习惯打卡共 ' + weekHabit + ' 次 · 趋势只统计喝水杯数，简单直观';
+}
+
+/* 事件 */
+$('waterAdd').addEventListener('click', () => waterAdd(1));
+$('waterUndo').addEventListener('click', () => waterAdd(-1));
+$('waterGoalBtn').addEventListener('click', () => {
+  $('waterGoalBox').hidden = !$('waterGoalBox').hidden;
+  if (!$('waterGoalBox').hidden) { $('waterGoalInput').value = health.waterGoal; $('waterGoalInput').focus(); }
+});
+$('waterGoalSave').addEventListener('click', () => {
+  const n = parseAmountText($('waterGoalInput').value);
+  if (n === null || n < 1) { showToast('请填 1 到 30 之间的数字，如：8'); return; }
+  health.waterGoal = Math.min(30, Math.round(n));
+  saveHealth();
+  $('waterGoalBox').hidden = true;
+  renderHealth();
+  showToast('目标已改为每天 ' + health.waterGoal + ' 杯');
+});
+$('habitAdd').addEventListener('click', addHabit);
+$('habitList').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-htoggle]');
+  if (t) { toggleHabit(t.dataset.htoggle); return; }
+  const d = e.target.closest('[data-hdel]');
+  if (d) delHabit(d.dataset.hdel);
+});
+$('sleepChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-sleep]');
+  if (!b) return;
+  health.sleep[todayStr()] = b.dataset.sleep;
+  saveHealth();
+  renderHealth();
+  showToast('已记录昨晚入睡：' + b.dataset.sleep);
+});
+$('qkWater').addEventListener('click', () => waterAdd(1));
+
+/* =========================================================
+   阶段 5：理财记账（独立保存，与积分完全分开，不外发）
+   存储：huajian_finance = { records:[…], budget }
+   ========================================================= */
+const FIN_KEY = 'huajian_finance';
+const FIN_CATS_OUT = ['餐饮', '交通', '购物', '居住', '日用', '医疗', '教育', '人情', '其他'];
+const FIN_CATS_IN = ['工资', '奖金', '补贴', '红包', '利息', '其他'];
+const FIN_ACCS = ['微信', '支付宝', '现金', '银行卡'];
+
+function loadFinance() {
+  try {
+    const r = localStorage.getItem(FIN_KEY);
+    if (r) { const o = JSON.parse(r); return { records: Array.isArray(o.records) ? o.records : [], budget: Number(o.budget) || 0 }; }
+  } catch (e) { }
+  return { records: [], budget: 0 };
+}
+let finance = loadFinance();
+function saveFinance() { localStorage.setItem(FIN_KEY, JSON.stringify(finance)); }
+
+function fmtMoney(n) {
+  const v = Math.round((Number(n) || 0) * 100) / 100;
+  return '¥' + (v % 1 === 0 ? v : v.toFixed(2));
+}
+
+// 宽容的数字解析：自动去掉逗号/空格/￥/元，全角数字转半角；解析不了返回 null
+function parseAmountText(s) {
+  const fw = { '０': '0', '１': '1', '２': '2', '３': '3', '４': '4', '５': '5', '６': '6', '７': '7', '８': '8', '９': '9', '。': '.' };
+  const t = String(s || '').replace(/[,，\s￥¥元]/g, '').split('').map((ch) => (fw[ch] !== undefined ? fw[ch] : ch)).join('');
+  if (!t) return null;
+  const n = parseFloat(t);
+  return isNaN(n) ? null : n;
+}
+
+let finType = 'out';
+let finAcc = '微信';
+
+function renderFinForm() {
+  document.querySelectorAll('#finType .vchip').forEach((b) => b.classList.toggle('on', b.dataset.ftype === finType));
+  const prevCat = $('finCat').value;
+  const cats = finType === 'out' ? FIN_CATS_OUT : FIN_CATS_IN;
+  $('finCat').innerHTML = cats.map((c) => '<option>' + c + '</option>').join('');
+  if (prevCat && cats.includes(prevCat)) $('finCat').value = prevCat;   // 切换账户时不丢失已选分类
+  $('finAcc').innerHTML = FIN_ACCS.map((a) =>
+    '<button class="vchip' + (a === finAcc ? ' on' : '') + '" data-facc="' + a + '" type="button">' + a + '</button>'
+  ).join('');
+}
+
+function openFinOverlay() {
+  finType = 'out';
+  $('finAmount').value = '';
+  $('finNote').value = '';
+  $('finDate').value = todayStr();
+  renderFinForm();
+  $('finOverlay').hidden = false;
+  setTimeout(() => $('finAmount').focus(), 100);
+}
+
+function saveFinRecord() {
+  const amt = parseAmountText($('finAmount').value);
+  if (amt === null || amt <= 0) { showToast('先填一个正确的金额哦，如：25.5'); return; }
+  finance.records.push({
+    id: uid(), type: finType, amount: Math.round(amt * 100) / 100,
+    date: $('finDate').value || todayStr(), cat: $('finCat').value,
+    acc: finAcc, note: $('finNote').value.trim(),
+  });
+  saveFinance();
+  $('finOverlay').hidden = true;
+  renderFinance();
+  showToast((finType === 'out' ? '支出 ' : '收入 ') + fmtMoney(amt) + ' 已记下 💰');
+}
+
+function monthKey(d) { return d.slice(0, 7); }
+
+function renderFinance() {
+  const M = monthKey(todayStr());
+  const monLabel = Number(M.slice(5)) + '月';
+  $('finMonthLabel').textContent = monLabel;
+  let out = 0, inc = 0;
+  const catSum = {};
+  for (const r of finance.records) {
+    if (monthKey(r.date) !== M) continue;
+    if (r.type === 'out') { out += r.amount; catSum[r.cat] = (catSum[r.cat] || 0) + r.amount; }
+    else inc += r.amount;
+  }
+  $('finOut').textContent = fmtMoney(out);
+  $('finIn').textContent = fmtMoney(inc);
+  $('finBal').textContent = fmtMoney(inc - out);
+
+  // 预算
+  if (finance.budget > 0) {
+    $('budgetText').textContent = fmtMoney(finance.budget);
+    const pct = Math.round(out / finance.budget * 100);
+    $('budgetBar').style.width = Math.min(100, pct) + '%';
+    $('budgetBar').style.background = pct > 100 ? 'linear-gradient(90deg,#f0a0a0,var(--bad))' : '';
+    $('budgetTip').textContent = pct > 100
+      ? '⚠ 本月已用 ' + pct + '%，超出预算 ' + fmtMoney(out - finance.budget)
+      : '本月已用 ' + pct + '%，还可花 ' + fmtMoney(finance.budget - out);
+  } else {
+    $('budgetText').textContent = '未设置';
+    $('budgetBar').style.width = '0%';
+    $('budgetTip').textContent = '设个月度预算，花销心里更有数';
+  }
+
+  // 近6个月柱状
+  let maxV = 1;
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+    const key = d.getFullYear() + '-' + pad2(d.getMonth() + 1);
+    let mo = 0, mi = 0;
+    for (const r of finance.records) {
+      if (monthKey(r.date) !== key) continue;
+      if (r.type === 'out') mo += r.amount; else mi += r.amount;
+    }
+    months.push({ label: (d.getMonth() + 1) + '月', out: mo, in: mi });
+    maxV = Math.max(maxV, mo, mi);
+  }
+  $('finBars').innerHTML = months.map((m) =>
+    '<div class="fin-col"><div class="fin-pair">' +
+    '<div class="fin-b out" style="height:' + Math.max(4, Math.round(m.out / maxV * 100)) + '%;"></div>' +
+    '<div class="fin-b in" style="height:' + Math.max(4, Math.round(m.in / maxV * 100)) + '%;"></div>' +
+    '</div><span class="fin-mon">' + m.label + '</span></div>'
+  ).join('');
+
+  // 本月支出分类
+  const cats = Object.keys(catSum).sort((a, b) => catSum[b] - catSum[a]);
+  $('finCats').innerHTML = cats.length
+    ? cats.map((c) => {
+      const v = catSum[c];
+      const pct = Math.round(v / out * 100);
+      return '<div class="cat-row"><span class="cn">' + esc(c) + '</span>' +
+        '<div class="prog" style="flex:1;"><i style="width:' + pct + '%;"></i></div>' +
+        '<span class="cv">' + fmtMoney(v) + ' · ' + pct + '%</span></div>';
+    }).join('')
+    : '<p class="empty-tip">本月还没有支出记录</p>';
+
+  // 明细（最近30条）
+  const list = [...finance.records].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id)).slice(0, 30);
+  $('finCount').textContent = '共 ' + finance.records.length + ' 条';
+  $('finList').innerHTML = list.length
+    ? list.map((r) =>
+      '<div class="note-item"><span class="nd">' + r.date.slice(5).replace('-', '/') + '</span>' +
+      '<span class="nt">' + (r.type === 'out' ? '🛍 ' : '💵 ') + esc(r.cat) + (r.note ? ' · ' + esc(r.note) : '') + '<span class="tl-meta">' + esc(r.acc) + '</span></span>' +
+      '<span class="' + (r.type === 'out' ? 'rec-amt-out' : 'rec-amt-in') + '">' + (r.type === 'out' ? '−' : '+') + fmtMoney(r.amount) + '</span>' +
+      '<button data-fdel="' + r.id + '" style="background:none;color:var(--ink2);">✕</button></div>'
+    ).join('')
+    : '<p class="empty-tip">还没有记录，点上面的"记一笔"开始吧</p>';
+}
+
+/* 记账事件 */
+$('quickNoteBtn').addEventListener('click', openFinOverlay);
+$('qkMoney').addEventListener('click', openFinOverlay);
+$('finAddBtn').addEventListener('click', openFinOverlay);
+$('finCancel').addEventListener('click', () => { $('finOverlay').hidden = true; });
+$('finSave').addEventListener('click', saveFinRecord);
+$('finType').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-ftype]');
+  if (!b) return;
+  finType = b.dataset.ftype;
+  renderFinForm();
+});
+$('finAcc').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-facc]');
+  if (!b) return;
+  finAcc = b.dataset.facc;
+  renderFinForm();
+});
+$('finList').addEventListener('click', (e) => {
+  const d = e.target.closest('[data-fdel]');
+  if (!d) return;
+  const r = finance.records.find((x) => x.id === d.dataset.fdel);
+  if (r && window.confirm('删除这条' + (r.type === 'out' ? '支出' : '收入') + '记录（' + fmtMoney(r.amount) + '）吗？')) {
+    finance.records = finance.records.filter((x) => x.id !== d.dataset.fdel);
+    saveFinance(); renderFinance();
+    showToast('已删除');
+  }
+});
+$('budgetBtn').addEventListener('click', () => {
+  $('budgetBox').hidden = !$('budgetBox').hidden;
+  if (!$('budgetBox').hidden) { $('budgetInput').value = finance.budget || ''; $('budgetInput').focus(); }
+});
+$('budgetSave').addEventListener('click', () => {
+  const n = parseAmountText($('budgetInput').value);
+  if (n === null || n <= 0) {
+    showToast('没看懂填的数字，请填如：3000（带逗号也没关系）');
+    $('budgetInput').focus();
+    return;   // 填错时绝不悄悄改动已有预算
+  }
+  finance.budget = Math.round(n);
+  saveFinance();
+  $('budgetBox').hidden = true;
+  renderFinance();
+  showToast('月度预算已设为 ' + fmtMoney(finance.budget));
+});
+$('budgetClear').addEventListener('click', () => {
+  if (!window.confirm('确定清除月度预算吗？')) return;
+  finance.budget = 0;
+  saveFinance();
+  $('budgetBox').hidden = true;
+  renderFinance();
+  showToast('预算已清除');
+});
+
+/* =========================================================
+   阶段 6：积分森林（奖励兑换 · 种树 · 明细 · 统计）
+   存储：huajian_forest = { trees:[…], rewards:[…] }
+   积分消费记录进 pointsStore.ledger（type:'spend'），余额不透支
+   ========================================================= */
+const FOREST_KEY = 'huajian_forest';
+const TREE_KINDS = {
+  sakura:    { name: '樱花树', cost: 50, final: '🌸' },
+  evergreen: { name: '常青树', cost: 80, final: '🌲' },
+  fruit:     { name: '果树',   cost: 120, final: '🍎' },
+};
+const TREE_STAGES = ['🌱', '🌱', '🌿', '🌳'];   // 第5级换成树种专属图标
+
+function loadForest() {
+  const defRewards = [
+    { id: 'rw1', name: '休息半小时', cost: 30 },
+    { id: 'rw2', name: '看一场电影', cost: 60 },
+    { id: 'rw3', name: '买个小礼物', cost: 100 },
+    { id: 'rw4', name: '周末出游', cost: 200 },
+  ];
+  try {
+    const r = localStorage.getItem(FOREST_KEY);
+    if (r) {
+      const o = JSON.parse(r);
+      return {
+        trees: Array.isArray(o.trees) ? o.trees : [],
+        rewards: Array.isArray(o.rewards) && o.rewards.length ? o.rewards : defRewards,
+      };
+    }
+  } catch (e) { }
+  return { trees: [], rewards: defRewards };
+}
+let forest = loadForest();
+function saveForest() { localStorage.setItem(FOREST_KEY, JSON.stringify(forest)); }
+
+/* 统一扣分：余额不足会提示并返回 false，绝不透支 */
+function payPoints(amount, reason) {
+  if (pointsStore.balance < amount) {
+    showToast('积分还差 ' + (amount - pointsStore.balance) + ' ✨，先去完成任务吧！');
+    return false;
+  }
+  pointsStore.balance -= amount;
+  pointsStore.ledger.push({ id: uid(), type: 'spend', amount, name: reason, time: todayStr() + ' ' + nowHM() });
+  savePoints();
+  renderHome();
+  renderPoints();
+  return true;
+}
+
+/* ---------- 统计（今日/本周/每月/每年，本周从周一起） ---------- */
+let ptRange = 'today';
+function mondayKeyOf(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  const diff = (dt.getDay() + 6) % 7;
+  dt.setDate(dt.getDate() - diff);
+  return fmtD(dt);
+}
+function renderPoints() {
+  const T = todayStr();
+  document.querySelectorAll('#ptRangeChips .vchip').forEach((b) => b.classList.toggle('on', b.dataset.ptr === ptRange));
+  const wk = mondayKeyOf(T);
+  let earn = 0, done = 0;
+  for (const e of pointsStore.ledger) {
+    if (e.type !== 'earn') continue;
+    const d = (e.time || '').slice(0, 10);
+    const hit = ptRange === 'today' ? d === T
+      : ptRange === 'week' ? (d >= wk && d <= T)
+        : ptRange === 'month' ? d.slice(0, 7) === T.slice(0, 7)
+          : d.slice(0, 4) === T.slice(0, 4);
+    if (hit) { earn += e.amount; done += 1; }
+  }
+  $('ptEarn').textContent = '+' + earn;
+  $('ptDone').textContent = done;
+  $('ptBal').textContent = pointsStore.balance;
+
+  const list = [...pointsStore.ledger].reverse().slice(0, 20);
+  $('ptCount').textContent = '共 ' + pointsStore.ledger.length + ' 条';
+  $('ptLedger').innerHTML = list.length
+    ? list.map((e) =>
+      '<div class="note-item"><span class="nd">' + esc((e.time || '').slice(5)) + '</span>' +
+      '<span class="nt">' + esc(e.name) + '</span>' +
+      '<span class="' + (e.type === 'earn' ? 'rec-amt-in' : 'rec-amt-out') + '">' + (e.type === 'earn' ? '+' : '−') + e.amount + '</span></div>'
+    ).join('')
+    : '<p class="empty-tip">完成任务就能有第一笔积分 ✨</p>';
+}
+
+/* ---------- 奖励商店 ---------- */
+function renderRewards() {
+  $('rwList').innerHTML = forest.rewards.map((r) =>
+    '<div class="rw-row"><span style="flex:1;">🎁 ' + esc(r.name) + '</span>' +
+    '<span class="tl-meta">' + r.cost + ' ✨</span>' +
+    '<button class="op ' + (pointsStore.balance >= r.cost ? 'op-done' : 'op-undo') + '" data-rw="' + r.id + '"' +
+    (pointsStore.balance >= r.cost ? '' : ' disabled') + '>兑换</button>' +
+    '<button class="op op-del" data-rwdel="' + r.id + '" title="删除">✕</button></div>'
+  ).join('') || '<p class="empty-tip">添加几个专属奖励犒劳自己吧</p>';
+}
+
+function addReward() {
+  const name = $('rwName').value.trim();
+  const cost = parseAmountText($('rwCost').value);
+  if (!name) { showToast('先写奖励名称哦～'); return; }
+  if (cost === null || cost <= 0) { showToast('积分价格填个数字，如：60'); return; }
+  forest.rewards.push({ id: uid(), name, cost: Math.round(cost) });
+  saveForest();
+  $('rwName').value = ''; $('rwCost').value = '';
+  renderRewards();
+  showToast('奖励已添加 🎁');
+}
+
+function redeemReward(id) {
+  const r = forest.rewards.find((x) => x.id === id);
+  if (!r) return;
+  if (!window.confirm('用 ' + r.cost + ' 积分兑换「' + r.name + '」吗？')) return;
+  if (!payPoints(r.cost, '兑换奖励：' + r.name)) return;
+  showToast('兑换成功！记得好好享受「' + r.name + '」🎁');
+  renderRewards();
+}
+
+/* ---------- 成长森林 ---------- */
+function treeStage(t) {
+  const days = Math.floor((new Date(todayStr()) - new Date(t.plantedAt)) / 86400000);
+  return Math.max(0, Math.min(4, days + t.growth));
+}
+function treeEmoji(t) {
+  const s = treeStage(t);
+  return s >= 4 ? (TREE_KINDS[t.kind] || TREE_KINDS.sakura).final : TREE_STAGES[s];
+}
+
+function renderForest() {
+  $('treeKinds').innerHTML = Object.keys(TREE_KINDS).map((k) =>
+    '<button class="vchip" data-plant="' + k + '" type="button">' +
+    (TREE_KINDS[k].final === '🌸' ? '🌸' : TREE_KINDS[k].final === '🌲' ? '🌲' : '🍎') +
+    ' 种' + TREE_KINDS[k].name + ' · ' + TREE_KINDS[k].cost + '✨</button>'
+  ).join('');
+
+  const done = forest.trees.filter((t) => treeStage(t) >= 4).length;
+  $('forestLine').textContent = '已种 ' + forest.trees.length + ' 棵 · 已成形 ' + done + ' 棵'
+    + (forest.trees.length > 4 ? '（树多时 ↓ 滑动查看）' : '');
+  const stageNames = ['种子', '发芽', '幼苗', '小树', '成形'];
+  if (!forest.trees.length) {
+    $('treeList').innerHTML = '<div class="grove"><span class="grove-empty">森林还空着，选上面一种树，种下第一棵吧 🌱</span></div>';
+    return;
+  }
+  $('treeList').innerHTML = '<div class="grove">' + forest.trees.slice().reverse().map((t) => {
+    const s = treeStage(t);
+    const def = TREE_KINDS[t.kind] || TREE_KINDS.sakura;
+    const dots = '●'.repeat(s + 1) + '○'.repeat(4 - s);
+    return '<div class="gtree">' +
+      '<div class="tree-art k-' + t.kind + ' st' + s + '">' +
+      '<div class="ta-ground"></div><div class="ta-seed"></div><div class="ta-trunk"></div>' +
+      '<div class="ta-sprout s1"></div><div class="ta-sprout s2"></div>' +
+      '<div class="ta-leaf l1"></div><div class="ta-leaf l2"></div><div class="ta-leaf l3"></div>' +
+      '<div class="ta-cone c1"></div><div class="ta-cone c2"></div><div class="ta-cone c3"></div>' +
+      '<div class="ta-fruit f1"></div><div class="ta-fruit f2"></div><div class="ta-fruit f3"></div>' +
+      '</div>' +
+      '<div class="gtree-name">' + def.name + ' · ' + stageNames[s] + (s >= 4 ? ' 🎉' : '') + '</div>' +
+      '<div class="gtree-sub"><span class="tree-dots">' + dots + '</span> ' + t.plantedAt.slice(5).replace('-', '月') + '日种下</div>' +
+      (s < 4 ? '<button class="op op-undo" data-water="' + t.id + '" style="margin-top:4px;">💧 浇水 2✨</button>' : '') +
+      '</div>';
+  }).join('') + '</div>';
+}
+
+function plantTree(kind) {
+  const def = TREE_KINDS[kind];
+  if (!def) return;
+  if (forest.trees.filter((t) => treeStage(t) < 4).length >= 3) {
+    showToast('最多同时养护 3 棵小树，先陪它们长大吧 🌿');
+    return;
+  }
+  if (!window.confirm('花 ' + def.cost + ' 积分种一棵「' + def.name + '」吗？')) return;
+  if (!payPoints(def.cost, '种树：' + def.name)) return;
+  forest.trees.push({ id: uid(), kind, plantedAt: todayStr(), growth: 0 });
+  saveForest();
+  renderForest();
+  showToast('种下了一棵' + def.name + '，它会每天陪着你长大 🌱');
+}
+
+function waterTree(id) {
+  const t = forest.trees.find((x) => x.id === id);
+  if (!t || treeStage(t) >= 4) return;
+  if (!payPoints(2, '浇水加速：' + (TREE_KINDS[t.kind] || TREE_KINDS.sakura).name)) return;
+  t.growth += 1;
+  saveForest();
+  renderForest();
+  showToast('浇了水，它又长了一级 ' + treeEmoji(t));
+}
+
+/* 阶段6事件 */
+$('ptRangeChips').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-ptr]');
+  if (!b) return;
+  ptRange = b.dataset.ptr;
+  renderPoints();
+});
+$('rwAdd').addEventListener('click', addReward);
+$('rwList').addEventListener('click', (e) => {
+  const r = e.target.closest('[data-rw]');
+  if (r) { redeemReward(r.dataset.rw); return; }
+  const d = e.target.closest('[data-rwdel]');
+  if (d) {
+    const rw = forest.rewards.find((x) => x.id === d.dataset.rwdel);
+    if (rw && window.confirm('删除奖励「' + rw.name + '」吗？')) {
+      forest.rewards = forest.rewards.filter((x) => x.id !== d.dataset.rwdel);
+      saveForest(); renderRewards();
+    }
+  }
+});
+$('treeKinds').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-plant]');
+  if (b) plantTree(b.dataset.plant);
+});
+$('treeList').addEventListener('click', (e) => {
+  const w = e.target.closest('[data-water]');
+  if (w) waterTree(w.dataset.water);
+});
+$('qkForest').addEventListener('click', () => {
+  showPage('more');
+  setTimeout(() => {
+    const el = document.getElementById('treeList');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
+});
+
+/* ---------- 主题 ---------- */
+function applyTheme(key) {
+  if (!THEMES[key]) key = 'sakura';
+  settings.theme = key;
+  document.body.className = 'theme-' + key;
+  document.querySelectorAll('#themeGrid .theme-card').forEach((c) => {
+    c.classList.toggle('selected', c.dataset.theme === key);
+  });
+  saveSettings();
+}
+function renderThemeGrid() {
+  $('themeGrid').innerHTML = Object.keys(THEMES).map((k) =>
+    '<button type="button" class="theme-card' + (settings.theme === k ? ' selected' : '') + '" data-theme="' + k + '">' +
+    '<span class="sw" style="background:' + THEMES[k].sw + '"></span>' +
+    '<span class="tl2">' + THEMES[k].label + '</span></button>'
+  ).join('');
+}
+$('themeBtn').addEventListener('click', () => { renderThemeGrid(); $('themeOverlay').hidden = false; });
+$('menuTheme').addEventListener('click', () => { renderThemeGrid(); $('themeOverlay').hidden = false; });
+$('themeClose').addEventListener('click', () => { $('themeOverlay').hidden = true; });
+$('themeGrid').addEventListener('click', (e) => {
+  const card = e.target.closest('.theme-card');
+  if (!card) return;
+  applyTheme(card.dataset.theme);
+  showToast('已换上「' + THEMES[card.dataset.theme].label + '」主题 🌷');
+});
+
+/* ---------- 页面切换（记住上次停留） ---------- */
+function showPage(name) {
+  if (!PAGES.includes(name)) name = 'home';
+  PAGES.forEach((n) => { $('p-' + n).hidden = n !== name; });
+  document.querySelectorAll('.bottomnav button, .side-nav button').forEach((b) => {
+    b.classList.toggle('on', b.dataset.page === name);
+  });
+  settings.lastPage = name;
+  saveSettings();
+  window.scrollTo({ top: 0 });
+}
+document.querySelectorAll('.bottomnav button, .side-nav button').forEach((btn) => {
+  btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+/* ---------- 未开放功能提示 ---------- */
+document.addEventListener('click', (e) => {
+  const soon = e.target.closest('[data-soon]');
+  if (soon) { showToast('🌱 ' + soon.dataset.soon); return; }
+  if (e.target.closest('#homeAddBar')) { showPage('home'); openAddForm(); }
+});
+
+/* ---------- 顶部日期时间（含时分秒） ---------- */
+function tickDate() {
+  const d = new Date();
+  $('dateLine').textContent = d.getFullYear() + '年' + (d.getMonth() + 1) + '月' + d.getDate() + '日 · 星期'
+    + '日一二三四五六'[d.getDay()] + ' · ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+}
+
+/* ---------- 启动 ---------- */
+tickDate();
+setInterval(tickDate, 1000);
+applyTheme(settings.theme);
+updateLastBackupLine();
+refreshAll();
+renderReadAll();
+renderHealth();
+renderFinance();
+renderPoints();
+renderRewards();
+renderForest();
+$('qkRead').addEventListener('click', () => showPage('read'));
+showPage(settings.lastPage);
+
+/* ---------- PWA: 注册 Service Worker（仅在 HTTPS 下生效） ---------- */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log('Service Worker 已注册，支持离线使用'))
+    .catch((e) => console.log('Service Worker 注册失败：', e));
+}
+</script>
+</body>
+</html>
